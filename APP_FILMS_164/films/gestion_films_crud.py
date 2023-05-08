@@ -86,10 +86,10 @@ def film_update_wtf():
         if form_update_film.validate_on_submit():
             # Récupèrer la valeur du champ depuis "genre_update_wtf.html" après avoir cliqué sur "SUBMIT".
             nom_film_update = form_update_film.nom_film_update_wtf.data
-            type_boisson_update = form_update_film.duree_film_update_wtf.data
+            type_boisson_update = 4 #form_update_film.duree_film_update_wtf.data
             prix_boisson_update = form_update_film.description_film_update_wtf.data
             cover_link_film_update = form_update_film.cover_link_film_update_wtf.data
-            datesortie_film_update = form_update_film.datesortie_film_update_wtf.data
+            datesortie_film_update = 54 #form_update_film.datesortie_film_update_wtf.data
 
             valeur_update_dictionnaire = {"value_id_boisson": id_film_update,
                                           "value_nom_film": nom_film_update,
@@ -128,12 +128,12 @@ def film_update_wtf():
 
             # Afficher la valeur sélectionnée dans le champ du formulaire "film_update_wtf.html"
             form_update_film.nom_film_update_wtf.data = data_film["nom_boisson"]
-            form_update_film.duree_film_update_wtf.data = data_film["type_boisson"]
+            #form_update_film.duree_film_update_wtf.data = data_film["type_boisson"]
             # Debug simple pour contrôler la valeur dans la console "run" de PyCharm
             print(f" type boisson  ", data_film["type_boisson"], "  type ", type(data_film["type_boisson"]))
             form_update_film.description_film_update_wtf.data = data_film["prix_vente_boisson"]
             form_update_film.cover_link_film_update_wtf.data = data_film["cover_link_boisson"]
-            form_update_film.datesortie_film_update_wtf.data = data_film["code_barre_boisson"]
+            #form_update_film.datesortie_film_update_wtf.data = data_film["code_barre_boisson"]
 
     except Exception as Exception_film_update_wtf:
         raise ExceptionFilmUpdateWtf(f"fichier : {Path(__file__).name}  ;  "

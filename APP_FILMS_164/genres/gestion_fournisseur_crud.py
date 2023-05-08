@@ -108,8 +108,8 @@ def genres_ajouter_wtf():
     if request.method == "POST":
         try:
             if form.validate_on_submit():
-                name_genre_wtf = form.nom_genre_wtf.data
-                name_genre = name_genre_wtf.lower()
+                name_genre = form.nom_genre_wtf.data
+                #name_genre = name_genre_wtf.lower()
                 valeurs_insertion_dictionnaire = {"value_intitule_genre": name_genre}
                 print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)
 
@@ -163,18 +163,18 @@ def genre_update_wtf():
         print(" on submit ", form_update.validate_on_submit())
         if form_update.validate_on_submit():
             # Récupèrer la valeur du champ depuis "genre_update_wtf.html" après avoir cliqué sur "SUBMIT".
-            # Puis la convertir en lettres minuscules.
             name_genre_update = form_update.nom_genre_update_wtf.data
-            name_genre_update = name_genre_update.lower()
+            # Puis la convertir en lettres minuscules.
+            #name_genre_update = name_genre_update.lower()
             date_genre_essai = form_update.date_genre_wtf_essai.data
 
             valeur_update_dictionnaire = {"value_id_genre": id_genre_update,
-                                          "value_name_genre": name_genre_update,
-                                          "value_date_genre_essai": date_genre_essai
+                                          "value_name_genre": name_genre_update
+#                                          "value_date_genre_essai": date_genre_essai
                                           }
             print("valeur_update_dictionnaire ", valeur_update_dictionnaire)
 
-            str_sql_update_intitulegenre = """UPDATE t_fournisseur SET nom_fournisseur = %(value_name_genre)s, 
+            str_sql_update_intitulegenre = """UPDATE t_fournisseur SET nom_fournisseur = %(value_name_genre)s 
             WHERE id_fournisseur = %(value_id_genre)s """
             with DBconnection() as mconn_bd:
                 mconn_bd.execute(str_sql_update_intitulegenre, valeur_update_dictionnaire)
