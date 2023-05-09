@@ -83,39 +83,39 @@ class ExceptionGenresAfficher(Base):
     pass
 
 
-class ExceptionGenreDeleteWtf(Base):
+class ExceptionFournisseurDeleteWtf(Base):
     pass
 
 
-class ExceptionGenreUpdateWtf(Base):
+class ExceptionFournisseurUpdateWtf(Base):
     pass
 
 
-class ExceptionGenresAjouterWtf(Base):
+class ExceptionFournisseurAjouterWtf(Base):
     pass
 
 
-class ExceptionFilmsGenresAfficher(Base):
+class ExceptionBoissonFournisseurAfficher(Base):
     pass
 
 
-class ExceptionEditGenreFilmSelected(Base):
+class ExceptionEditFournisseurBoissonSelected(Base):
     pass
 
 
-class ExceptionUpdateGenreFilmSelected(Base):
+class ExceptionUpdateFournisseurBoissonSelected(Base):
     pass
 
 
-class ExceptionGenresFilmsAfficherData(Base):
+class ExceptionFournisseurBoissonAfficherData(Base):
     pass
 
 
-class ExceptionFilmUpdateWtf(Base):
+class ExceptionBoissonUpdateWtf(Base):
     pass
 
 
-class ExceptionFilmDeleteWtf(Base):
+class ExceptionBoissonDeleteWtf(Base):
     pass
 
 
