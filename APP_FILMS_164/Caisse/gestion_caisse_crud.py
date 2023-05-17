@@ -12,13 +12,13 @@ from flask import url_for
 from APP_FILMS_164 import app
 from APP_FILMS_164.database.database_tools import DBconnection
 from APP_FILMS_164.erreurs.exceptions import *
-from APP_FILMS_164.Fournisseur.gestion_fournisseur_wtf_forms import FormWTFAjouterFournisseur
-from APP_FILMS_164.Fournisseur.gestion_fournisseur_wtf_forms import FormWTFDeleteFournisseur
-from APP_FILMS_164.Fournisseur.gestion_fournisseur_wtf_forms import FormWTFUpdateFournisseur
+from APP_FILMS_164.Caisse.gestion_caisse_wtf_forms import FormWTFAjouterCaisse
+from APP_FILMS_164.Caisse.gestion_caisse_wtf_forms import FormWTFDeleteCaisse
+from APP_FILMS_164.Caisse.gestion_caisse_wtf_forms import FormWTFUpdateCaisse
 
 """
     Auteur : OM 2021.03.16
-    Définition d'une "route" /fournisseur_afficher
+    Définition d'une "route" /caisse_afficher
 
     Test : ex : http://127.0.0.1:5575/fournisseur_afficher
 
@@ -30,55 +30,49 @@ from APP_FILMS_164.Fournisseur.gestion_fournisseur_wtf_forms import FormWTFUpdat
 
 @app.route("/caisse_afficher/>", methods=['GET', 'POST'])
 def caisse_afficher():
-    # if request.method == "GET":
-    #     try:
-    #         with DBconnection() as mc_afficher:
-    #             if order_by == "ASC" and id_fournisseur_sel == 0:
-    #                 strsql_fournisseur_afficher = """SELECT t_fournisseur.id_fournisseur, t_fournisseur.nom_fournisseur, GROUP_CONCAT(DISTINCT t_mail.nom_mail) AS Email, GROUP_CONCAT(DISTINCT t_telephone.num_telephone) AS Telephone
-    #                                             FROM t_fournisseur
-    #                                             LEFT JOIN t_mail_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_mail_avoir_fournisseur.fk_fournisseur
-    #                                             LEFT JOIN t_mail ON t_mail_avoir_fournisseur.fk_mail = t_mail.id_mail
-    #                                             LEFT JOIN t_telephone_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_telephone_avoir_fournisseur.fk_fournisseur
-    #                                             LEFT JOIN t_telephone ON t_telephone_avoir_fournisseur.fk_telephone = t_telephone.id_telephone
-    #                                             GROUP BY t_fournisseur.id_fournisseur;
-    #                                             """
-    #                 mc_afficher.execute(strsql_fournisseur_afficher)
-    #             elif order_by == "ASC":
-    #                 # C'EST LA QUE VOUS ALLEZ DEVOIR PLACER VOTRE PROPRE LOGIQUE MySql
-    #                 # la commande MySql classique est "SELECT * FROM t_fournisseur"
-    #                 # Pour "lever"(raise) une erreur s'il y a des erreurs sur les noms d'attributs dans la table
-    #                 # donc, je précise les champs à afficher
-    #                 # Constitution d'un dictionnaire pour associer l'id du genre sélectionné avec un nom de variable
-    #                 valeur_id_fournisseur_selected_dictionnaire = {"value_id_genre_selected": id_fournisseur_sel}
-    #                 strsql_fournisseur_afficher = """SELECT id_fournisseur, nom_fournisseur FROM t_fournisseur WHERE id_fournisseur = %(value_id_genre_selected)s"""
-    #
-    #                 mc_afficher.execute(strsql_fournisseur_afficher, valeur_id_fournisseur_selected_dictionnaire)
-    #             else:
-    #                 strsql_fournisseur_afficher = """SELECT id_fournisseur, nom_fournisseur FROM t_fournisseur ORDER BY id_fournisseur DESC"""
-    #
-    #                 mc_afficher.execute(strsql_fournisseur_afficher)
-    #
-    #             data_fournisseur = mc_afficher.fetchall()
-    #
-    #             print("data_fournisseur ", data_fournisseur, " Type : ", type(data_fournisseur))
-    #
-    #             # Différencier les messages si la table est vide.
-    #             if not data_fournisseur and id_fournisseur_sel == 0:
-    #                 flash("""La table "t_fournisseur" est vide. !!""", "warning")
-    #             elif not data_fournisseur and id_fournisseur_sel > 0:
-    #                 # Si l'utilisateur change l'id_fournisseur dans l'URL et que le genre n'existe pas,
-    #                 flash(f"Le genre demandé n'existe pas !!", "warning")
-    #             else:
-    #                 # Dans tous les autres cas, c'est que la table "t_fournisseur" est vide.
-    #                 # OM 2020.04.09 La ligne ci-dessous permet de donner un sentiment rassurant aux utilisateurs.
-    #                 flash(f"Données Fournisseur affichés !!", "success")
-    #
-    #     except Exception as Exception_genres_afficher:
-    #         raise ExceptionGenresAfficher(f"fichier : {Path(__file__).name}  ;  "
-    #                                       f"{fournisseur_afficher.__name__} ; "
-    #                                       f"{Exception_genres_afficher}")
-    #
-    #     # Envoie la page "HTML" au serveur.
+    if request.method == "GET":
+        try:
+            with DBconnection() as mc_afficher:
+                if order_by == "ASC" and id_fournisseur_sel == 0:
+                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse
+                                                """
+                    mc_afficher.execute(strsql_caisse_afficher)
+                elif order_by == "ASC":
+                    # C'EST LA QUE VOUS ALLEZ DEVOIR PLACER VOTRE PROPRE LOGIQUE MySql
+                    # la commande MySql classique est "SELECT * FROM t_caisse"
+                    # Pour "lever"(raise) une erreur s'il y a des erreurs sur les noms d'attributs dans la table
+                    # donc, je précise les champs à afficher
+                    # Constitution d'un dictionnaire pour associer l'id du genre sélectionné avec un nom de variable
+                    valeur_id_caisse_selected_dictionnaire = {"value_id_caisse_selected": id_caisse_sel}
+                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse WHERE id_caisse = %(value_id_caisse_selected)s"""
+
+                    mc_afficher.execute(strsql_caisse_afficher, valeur_id_caisse_selected_dictionnaire)
+                else:
+                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse ORDER BY id_caisse DESC"""
+
+                    mc_afficher.execute(strsql_caisse_afficher)
+
+                data_caisse = mc_afficher.fetchall()
+
+                print("data_caisse ", data_caisse, " Type : ", type(data_caisse))
+
+                # Différencier les messages si la table est vide.
+                if not data_caisse and id_caisse_sel == 0:
+                    flash("""La table "t_caisse" est vide. !!""", "warning")
+                elif not data_caisse and id_caisse_sel > 0:
+                    # Si l'utilisateur change l'id_caisse dans l'URL et que le genre n'existe pas,
+                    flash(f"La date de caisse demandé n'existe pas !!", "warning")
+                else:
+                    # Dans tous les autres cas, c'est que la table "t_caisse" est vide.
+                    # OM 2020.04.09 La ligne ci-dessous permet de donner un sentiment rassurant aux utilisateurs.
+                    flash(f"Données caisses affichés !!", "success")
+
+        except Exception as Exception_caisse_afficher:
+            raise ExceptionCaisseAfficher(f"fichier : {Path(__file__).name}  ;  "
+                                          f"{caisse_afficher.__name__} ; "
+                                          f"{Exception_caisse_afficher}")
+
+        # Envoie la page "HTML" au serveur.
     return render_template("caisse/caisse_afficher.html")
     #
 
@@ -218,7 +212,7 @@ def caisse_update_wtf():
 
     But : Effacer(delete) un genre qui a été sélectionné dans le formulaire "fournisseur_afficher.html"
 
-    Remarque :  Dans le champ "nom_fournisseur_delete_wtf" du formulaire "Fournisseur/fournisseur_delete_wtf.html",
+    Remarque :  Dans le champ "date_caisse_delete_wtf" du formulaire "Fournisseur/caisse_delete_wtf.html",
                 le contrôle de la saisie est désactivée. On doit simplement cliquer sur "DELETE"
 """
 
@@ -231,7 +225,7 @@ def caisse_delete_wtf():
     id_fournisseur_delete = request.values['id_fournisseur_btn_delete_html']
 
     # Objet formulaire pour effacer le genre sélectionné.
-    form_delete = FormWTFDeleteFournisseur()
+    form_delete = FormWTFDeleteCaisse()
     try:
         print(" on submit ", form_delete.validate_on_submit())
         if request.method == "POST" and form_delete.validate_on_submit():
@@ -241,7 +235,7 @@ def caisse_delete_wtf():
 
             if form_delete.submit_btn_conf_del.data:
                 # Récupère les données afin d'afficher à nouveau
-                # le formulaire "Fournisseur/fournisseur_delete_wtf.html" lorsque le bouton "Etes-vous sur d'effacer ?" est cliqué.
+                # le formulaire "Fournisseur/caisse_delete_wtf.html" lorsque le bouton "Etes-vous sur d'effacer ?" est cliqué.
                 data_boisson_attribue_fournisseur_delete = session['data_boisson_attribue_fournisseur_delete']
                 print("data_boisson_attribue_fournisseur_delete ", data_boisson_attribue_fournisseur_delete)
 
@@ -284,7 +278,7 @@ def caisse_delete_wtf():
                 print("data_boisson_attribue_fournisseur_delete...", data_boisson_attribue_fournisseur_delete)
 
                 # Nécessaire pour mémoriser les données afin d'afficher à nouveau
-                # le formulaire "Fournisseur/fournisseur_delete_wtf.html" lorsque le bouton "Etes-vous sur d'effacer ?" est cliqué.
+                # le formulaire "Fournisseur/caisse_delete_wtf.html" lorsque le bouton "Etes-vous sur d'effacer ?" est cliqué.
                 session['data_boisson_attribue_fournisseur_delete'] = data_boisson_attribue_fournisseur_delete
 
                 # Opération sur la BD pour récupérer "id_fournisseur" et "nom_fournisseur" de la "t_fournisseur"
@@ -298,18 +292,18 @@ def caisse_delete_wtf():
                       " fournisseur ",
                       data_nom_fournisseur["nom_fournisseur"])
 
-            # Afficher la valeur sélectionnée dans le champ du formulaire "fournisseur_delete_wtf.html"
-            form_delete.nom_fournisseur_delete_wtf.data = data_nom_fournisseur["nom_fournisseur"]
+            # Afficher la valeur sélectionnée dans le champ du formulaire "caisse_delete_wtf.html"
+            form_delete.date_caisse_delete_wtf.data = data_nom_fournisseur["nom_fournisseur"]
 
-            # Le bouton pour l'action "DELETE" dans le form. "fournisseur_delete_wtf.html" est caché.
+            # Le bouton pour l'action "DELETE" dans le form. "caisse_delete_wtf.html" est caché.
             btn_submit_del = False
 
     except Exception as Exception_fournisseur_delete_wtf:
         raise ExceptionFournisseurDeleteWtf(f"fichier : {Path(__file__).name}  ;  "
-                                            f"{fournisseur_delete_wtf.__name__} ; "
+                                            f"{caisse_delete_wtf.__name__} ; "
                                             f"{Exception_fournisseur_delete_wtf}")
 
-    return render_template("Fournisseur/fournisseur_delete_wtf.html",
+    return render_template("Fournisseur/caisse_delete_wtf.html",
                            form_delete=form_delete,
                            btn_submit_del=btn_submit_del,
                            data_boisson_associes=data_boisson_attribue_fournisseur_delete)
