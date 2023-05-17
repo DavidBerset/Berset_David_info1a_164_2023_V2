@@ -19,6 +19,13 @@
 						{% endfor %}
 					</p>
 					<p>
+						{{ form_update_boisson.type_boisson_update_wtf.label }}<br>
+						{{ form_update_boisson.type_boisson_update_wtf(cols=50, rows=10) }}<br>
+						{% for error in form_update_boisson.type_boisson_update_wtf.errors %}
+						<span style="color: red;">[{{ error }}]</span>
+						{% endfor %}
+					</p>
+					<p>
 						{{ form_update_boisson.prix_boisson_update_wtf.label }}<br>
 						{{ form_update_boisson.prix_boisson_update_wtf(cols=50, rows=10) }}<br>
 						{% for error in form_update_boisson.prix_boisson_update_wtf.errors %}

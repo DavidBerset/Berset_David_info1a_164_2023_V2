@@ -17,14 +17,19 @@
 						  Type
 						</th>
 						<th class="" >
+							Stock
 						</th>
 						<th class="" >
-						  Description
+						  Prix
 						</th>
 						<th class="" >
-						  Affiche
+						  Image
 						</th>
 						<th class="" >
+
+						</th>
+						<th class="" >
+
 						</th>
 						<th class="align-middle">
 						<a class="btn btn-primary" href="{{ url_for('boisson_add_wtf') }}" role="button">Ajouter</a>
@@ -45,10 +50,13 @@
 						{{ row.type_boisson|default("", True) }}
 					  </td>
 					  <td class="align-middle">
-						{{ row.code_barre_boisson|default("", True) }}
+						{{ row.Stock|default("", True) }}
 					  </td>
 					  <td class="align-middle">
 						{{ row.prix_vente_boisson|default("", True) }}
+					  </td>
+					  <td class="align-middle">
+						{{ row.code_barre_boisson|default("", True) }}
 					  </td>
 					  <td class="align-middle">
 						<img class="img" src={{ row.cover_link_boisson|default(None, True) }} style="border: 0;display:block; width:150px; max-height:auto;"  alt = "image masquée FFP8 (in COVID-19 Memory) (absente) mod 164">

@@ -86,7 +86,7 @@ def boisson_update_wtf():
         if form_update_boisson.validate_on_submit():
             # Récupèrer la valeur du champ depuis "fournisseur_update_wtf.html" après avoir cliqué sur "SUBMIT".
             nom_boisson_update = form_update_boisson.nom_boisson_update_wtf.data
-            type_boisson_update = 4 #form_update_boisson.type_boisson_update_wtf.data
+            type_boisson_update = form_update_boisson.type_boisson_update_wtf.data
             prix_boisson_update = form_update_boisson.prix_boisson_update_wtf.data
             cover_link_boisson_update = form_update_boisson.cover_link_boisson_update_wtf.data
             code_barre_boisson_update = 54 #form_update_boisson.code_barre_boisson_update_wtf.data

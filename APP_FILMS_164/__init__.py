@@ -42,6 +42,8 @@ try:
     from APP_FILMS_164.essais_wtf_forms import gestion_essai_wtf
     from APP_FILMS_164.essais_wtf_forms import gestion_wtf_forms_demo_select
     from APP_FILMS_164.Fournisseur import gestion_fournisseur_crud
+    from APP_FILMS_164.Caisse import gestion_caisse_crud
+    from APP_FILMS_164.Caisse import gestion_caisse_wtf_forms
     from APP_FILMS_164.demos_om_164 import routes_demos
 
     from APP_FILMS_164.Boisson_Fournisseur import gestion_boisson_fournisseur_crud

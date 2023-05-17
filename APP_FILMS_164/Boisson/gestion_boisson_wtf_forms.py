@@ -35,15 +35,7 @@ class FormWTFUpdateBoisson(FlaskForm):
     """
 
     nom_boisson_update_wtf = StringField("Clavioter le nom de la boisson", widget=TextArea())
-    # type_boisson_update_wtf = StringField("Type", validators=[Length(min=1, max=5000,
-    #                 message=u"Min %(min)d et "
-    #                                             u"max %(max)d "
-    #                                             u"Selon Wikipédia "
-    #                                             u"L'Incendie du "
-    #                                             u"monastère du "
-    #                                             u"Lotus rouge "
-    #                                             u"durée 1620 "
-    #                                             u"min")])
+    type_boisson_update_wtf = StringField("Clavioter le type de la boisson", widget=TextArea())
 
     prix_boisson_update_wtf = StringField("Prix de la boisson à la vente ", widget=TextArea())
     cover_link_boisson_update_wtf = StringField("Lien d'une image de la boisson ", widget=TextArea())

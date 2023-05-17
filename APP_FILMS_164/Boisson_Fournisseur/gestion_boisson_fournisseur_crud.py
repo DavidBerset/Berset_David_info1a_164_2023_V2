@@ -32,9 +32,13 @@ def boisson_fournisseur_afficher(id_boisson_sel):
     if request.method == "GET":
         try:
             with DBconnection() as mc_afficher:
+                # sous requete par de t_boisson et compte la quatité stocké depuis cette requet on vas rechercher la liste des fournisseur par boisson
                 strsql_fournisseur_boisson_afficher_data = """SELECT id_boisson, nom_boisson, type_boisson, prix_vente_boisson, cover_link_boisson, code_barre_boisson,
-                                                            GROUP_CONCAT(nom_fournisseur) as BoissonFournisseur FROM t_boisson_acheter_fournisseur
-                                                            RIGHT JOIN t_boisson ON t_boisson.id_boisson = t_boisson_acheter_fournisseur.fk_boisson
+                                                            GROUP_CONCAT(nom_fournisseur) as BoissonFournisseur, Stock FROM (
+                                                            SELECT id_boisson, nom_boisson, type_boisson, prix_vente_boisson, cover_link_boisson, code_barre_boisson, SUM(t_boisson_stocker_contenance.nombre_quantite) AS Stock FROM t_boisson 
+                                                            LEFT JOIN t_boisson_stocker_contenance ON t_boisson.id_boisson  = t_boisson_stocker_contenance.fk_boisson
+                                                            GROUP BY id_boisson) AS t_boisson
+                                                            LEFT JOIN t_boisson_acheter_fournisseur ON id_boisson = t_boisson_acheter_fournisseur.fk_boisson
                                                             LEFT JOIN t_fournisseur ON t_fournisseur.id_fournisseur = t_boisson_acheter_fournisseur.fk_fournisseur
                                                             GROUP BY id_boisson"""
                 if id_boisson_sel == 0:

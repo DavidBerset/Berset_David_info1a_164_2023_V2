@@ -42,17 +42,16 @@ class FormWTFUpdateFournisseur(FlaskForm):
                                                                                          "apostrophe, de double trait "
                                                                                          "union")
                                                                           ])
-    date_fournisseur_wtf_essai = StringField("Clavioter le fournisseur ", validators=[Length(min=2, max=20, message="min 2 max 20"),
-                                                                          Regexp(nom_fournisseur_update_regexp,
-                                                                                 message="Pas de chiffres, de "
-                                                                                         "caractères "
-                                                                                         "spéciaux, "
-                                                                                         "d'espace à double, de double "
-                                                                                         "apostrophe, de double trait "
-                                                                                         "union")
-                                                                          ])
-    #date_fournisseur_wtf_essai = DateField("Essai date", validators=[InputRequired("Date obligatoire"),
-    #                                                           DataRequired("Date non valide")])
+    email_fournisseur_wtf_essai = StringField("Clavioter l'email du fournisseur ")#, validators=[Length(min=2, max=20, message="min 2 max 20"),
+                                                                          # Regexp(nom_fournisseur_update_regexp,
+                                                                          #        message="Pas de chiffres, de "
+                                                                          #                "caractères "
+                                                                          #                "spéciaux, "
+                                                                          #                "d'espace à double, de double "
+                                                                          #                "apostrophe, de double trait "
+                                                                          #                "union")
+                                                                          # ])
+
     submit = SubmitField("Update le fournisseur")
 
 

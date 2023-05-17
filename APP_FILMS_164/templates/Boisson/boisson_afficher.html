@@ -17,10 +17,16 @@
 						  Type
 						</th>
 						<th class="" >
-						  Description
+
 						</th>
 						<th class="" >
-						  Affiche
+						  Prix
+						</th>
+						<th class="" >
+
+						</th>
+						<th class="" >
+						  Image
 						</th>
 					</tr>
 				</thead>
@@ -37,11 +43,11 @@
 					  <th class="align-middle">
 						{{ row.type_boisson|default("", True) }}
 					  </th>
-					  <th class="align-middle">
-						{{ row.code_barre_boisson|default("", True) }}
+						<th class="align-middle">
+						{{ row.prix_vente_boisson|default("", True) }}
 					  </th>
 					  <th class="align-middle">
-						{{ row.prix_vente_boisson|default("", True) }}
+						{{ row.code_barre_boisson|default("", True) }}
 					  </th>
 					  <th class="align-middle">
 						<img class="img" src={{ row.cover_link_boisson|default(None, True) }} style="border: 0;display:block; width:150px; max-height:auto;"  alt = "image masquée FFP8 (in COVID-19 Memory) (absente) mod 164">
