@@ -33,47 +33,36 @@ def caisse_afficher():
     if request.method == "GET":
         try:
             with DBconnection() as mc_afficher:
-                if order_by == "ASC" and id_fournisseur_sel == 0:
-                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse
-                                                """
+                order_by = request.args.get("order_by", "ASC")
+                id_caisse_sel = request.args.get("id_caisse_sel", 0, type=int)
+
+                if order_by == "ASC" and id_caisse_sel == 0:
+                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse"""
                     mc_afficher.execute(strsql_caisse_afficher)
                 elif order_by == "ASC":
-                    # C'EST LA QUE VOUS ALLEZ DEVOIR PLACER VOTRE PROPRE LOGIQUE MySql
-                    # la commande MySql classique est "SELECT * FROM t_caisse"
-                    # Pour "lever"(raise) une erreur s'il y a des erreurs sur les noms d'attributs dans la table
-                    # donc, je précise les champs à afficher
-                    # Constitution d'un dictionnaire pour associer l'id du genre sélectionné avec un nom de variable
                     valeur_id_caisse_selected_dictionnaire = {"value_id_caisse_selected": id_caisse_sel}
                     strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse WHERE id_caisse = %(value_id_caisse_selected)s"""
-
                     mc_afficher.execute(strsql_caisse_afficher, valeur_id_caisse_selected_dictionnaire)
                 else:
                     strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse ORDER BY id_caisse DESC"""
-
                     mc_afficher.execute(strsql_caisse_afficher)
 
                 data_caisse = mc_afficher.fetchall()
 
-                print("data_caisse ", data_caisse, " Type : ", type(data_caisse))
-
-                # Différencier les messages si la table est vide.
                 if not data_caisse and id_caisse_sel == 0:
                     flash("""La table "t_caisse" est vide. !!""", "warning")
                 elif not data_caisse and id_caisse_sel > 0:
-                    # Si l'utilisateur change l'id_caisse dans l'URL et que le genre n'existe pas,
-                    flash(f"La date de caisse demandé n'existe pas !!", "warning")
+                    flash(f"La date de caisse demandée n'existe pas !!", "warning")
                 else:
-                    # Dans tous les autres cas, c'est que la table "t_caisse" est vide.
-                    # OM 2020.04.09 La ligne ci-dessous permet de donner un sentiment rassurant aux utilisateurs.
-                    flash(f"Données caisses affichés !!", "success")
+                    flash(f"Données caisses affichées !!", "success")
+
+                return render_template("caisse/caisse_afficher.html", data_caisse=data_caisse)
 
         except Exception as Exception_caisse_afficher:
-            raise ExceptionCaisseAfficher(f"fichier : {Path(__file__).name}  ;  "
-                                          f"{caisse_afficher.__name__} ; "
-                                          f"{Exception_caisse_afficher}")
+            raise ExceptionCaisseAfficher(f"fichier : {Path(__file__).name}  ;  {caisse_afficher.__name__} ; {Exception_caisse_afficher}")
 
-        # Envoie la page "HTML" au serveur.
     return render_template("caisse/caisse_afficher.html")
+
     #
 
 """
@@ -161,6 +150,8 @@ def caisse_update_wtf():
             # Puis la convertir en lettres minuscules.
             # name_fournisseur_update = name_fournisseur_update.lower()
             email_fournisseur_essai = form_update.email_fournisseur_wtf_essai.data
+
+
 
             valeur_update_dictionnaire = {"value_id_fournisseur": id_fournisseur_update,
                                           "value_name_fournisseur": name_fournisseur_update,

@@ -61,6 +61,9 @@ class MonErreur(Exception):
 class MaBdErreurConnexion(Exception):
     """Erreur qui doit être affichée lorsque la connection à la BD à des problèmes"""
     pass
+class ExceptionCaisseAfficher(Exception):
+    pass
+
 
 
 class DatabaseException(Base):

@@ -28,20 +28,6 @@ class FormWTFAddBoisson(FlaskForm):
     submit = SubmitField("Enregistrer boisson")
 
 
-class FormWTFUpdateBoisson(FlaskForm):
-    """
-        Dans le formulaire "boisson_update_wtf.html" on impose que le champ soit rempli.
-        Définition d'un "bouton" submit avec un libellé personnalisé.
-    """
-
-    nom_boisson_update_wtf = StringField("Clavioter le nom de la boisson", widget=TextArea())
-    type_boisson_update_wtf = StringField("Clavioter le type de la boisson", widget=TextArea())
-
-    prix_boisson_update_wtf = StringField("Prix de la boisson à la vente ", widget=TextArea())
-    cover_link_boisson_update_wtf = StringField("Lien d'une image de la boisson ", widget=TextArea())
-    submit = SubmitField("Update film")
-
-
 class FormWTFDeleteBoisson(FlaskForm):
     """
         Dans le formulaire "boisson_delete_wtf.html"

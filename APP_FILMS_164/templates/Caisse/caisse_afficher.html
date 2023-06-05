@@ -1,10 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %} Afficher CAISSE {% endblock %}
+{% block body %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<p>
+				Caisse
+			</p>
+            <table class="table table-bordered table-sm">
+            {% if data %}
+                <thead>
+                    <tr>
+                        <th class="align-middle">
+                            Id
+                        </th>
+                        <th class="align-middle">
+                            Date caisse
+                        </th>
+                        <th class="align-middle">
+							Caisse avant fête
+                        </th>
+                        <th class="align-middle">
+							caisse après fête
+                        </th>
+						<th class="align-middle">
+							difference caisse
+                        </th>
+                        <th class="align-middle">
 
-</body>
-</html>
+                        </th>
+						<th class="text-center" class="align-middle">
+							<a class="btn btn-primary" href="{{ url_for('fournisseur_ajouter_wtf') }}" role="button">Ajouter</a>
+						</th>
+                    </tr>
+                </thead>
+            {% endif %}
+            <tbody>
+            {% for row in data %}
+				<tr>
+					<td class="align-middle">
+						{{ row.id_caisse }}
+					</td>
+					<td class="align-middle">
+						{{ row.date_caisse }}
+					</td>
+					<td class="align-middle">
+						{{ row.caisse_avant_fete }}
+					</td>
+					<td class="align-middle">
+						{{ row.caisse_apres_fete }}
+					</td>
+					<td class="align-middle">
+						{{ row.difference_caisse }}
+					</td>
+					<td class="text-center" class="align-middle">
+						<a class="btn btn-warning" href="{{ url_for('fournisseur_update_wtf', id_fournisseur_btn_edit_html=row.id_fournisseur) }}" role="button">Edit</a>
+					</td>
+					<td class="text-center" class="align-middle">
+						<a class="btn btn-danger" href="{{ url_for('fournisseur_delete_wtf', id_fournisseur_btn_delete_html=row.id_fournisseur) }}" role="button">Delete</a>
+					</td>
+				</tr>
+            {% else %}
+				<tr>
+					<td colspan="7">
+						Aucune caisse.
+					</td>
+					<td>
+						<a class="btn btn-primary" href="{{ url_for('fournisseur_ajouter_wtf') }}" role="button">Ajouter</a>
+					</td>
+				</tr>
+            {% endfor %}
+            </tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -34,27 +34,49 @@ def fournisseur_afficher(order_by, id_fournisseur_sel):
         try:
             with DBconnection() as mc_afficher:
                 if order_by == "ASC" and id_fournisseur_sel == 0:
-                    strsql_fournisseur_afficher = """SELECT t_fournisseur.id_fournisseur, t_fournisseur.nom_fournisseur, GROUP_CONCAT(DISTINCT t_mail.nom_mail) AS Email, GROUP_CONCAT(DISTINCT t_telephone.num_telephone) AS Telephone
-                                                FROM t_fournisseur
-                                                LEFT JOIN t_mail_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_mail_avoir_fournisseur.fk_fournisseur
-                                                LEFT JOIN t_mail ON t_mail_avoir_fournisseur.fk_mail = t_mail.id_mail
-                                                LEFT JOIN t_telephone_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_telephone_avoir_fournisseur.fk_fournisseur
-                                                LEFT JOIN t_telephone ON t_telephone_avoir_fournisseur.fk_telephone = t_telephone.id_telephone
-                                                GROUP BY t_fournisseur.id_fournisseur;
-                                                """
+                    strsql_fournisseur_afficher = """SELECT t_fournisseur.id_fournisseur, t_fournisseur.nom_fournisseur, GROUP_CONCAT(DISTINCT t_mail.nom_mail) AS Email, GROUP_CONCAT(DISTINCT t_telephone.num_telephone) AS Telephone, GROUP_CONCAT(DISTINCT CONCAT_WS(', ', t_adresse.nom_rue_adresse, t_adresse.ville_adresse, t_adresse.npa_adresse)) AS Adresse
+                                                    FROM t_fournisseur
+                                                    LEFT JOIN t_mail_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_mail_avoir_fournisseur.fk_fournisseur
+                                                    LEFT JOIN t_mail ON t_mail_avoir_fournisseur.fk_mail = t_mail.id_mail
+                                                    LEFT JOIN t_telephone_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_telephone_avoir_fournisseur.fk_fournisseur
+                                                    LEFT JOIN t_telephone ON t_telephone_avoir_fournisseur.fk_telephone = t_telephone.id_telephone
+                                                    LEFT JOIN t_adresse_etre_fournisseur ON t_fournisseur.id_fournisseur = t_adresse_etre_fournisseur.fk_fournisseur
+                                                    LEFT JOIN t_adresse ON t_adresse_etre_fournisseur.fk_adresse = t_adresse.id_adresse
+                                                    GROUP BY t_fournisseur.id_fournisseur;
+                                                    """
                     mc_afficher.execute(strsql_fournisseur_afficher)
                 elif order_by == "ASC":
-                    # C'EST LA QUE VOUS ALLEZ DEVOIR PLACER VOTRE PROPRE LOGIQUE MySql
-                    # la commande MySql classique est "SELECT * FROM t_fournisseur"
-                    # Pour "lever"(raise) une erreur s'il y a des erreurs sur les noms d'attributs dans la table
-                    # donc, je précise les champs à afficher
-                    # Constitution d'un dictionnaire pour associer l'id du genre sélectionné avec un nom de variable
-                    valeur_id_fournisseur_selected_dictionnaire = {"value_id_genre_selected": id_fournisseur_sel}
-                    strsql_fournisseur_afficher = """SELECT id_fournisseur, nom_fournisseur FROM t_fournisseur WHERE id_fournisseur = %(value_id_genre_selected)s"""
+                    # C'EST ICI QUE VOUS DEVEZ METTRE VOTRE LOGIQUE MySql PERSONNALISÉE
+                    # La commande MySql classique est "SELECT * FROM t_fournisseur"
+                    # Pour "lever"(raise) une erreur s'il y a des erreurs sur les noms d'attributs dans la table,
+                    # je précise les champs à afficher.
+                    # Constitution d'un dictionnaire pour associer l'id du fournisseur sélectionné avec un nom de variable
+                    valeur_id_fournisseur_selected_dictionnaire = {"value_id_fournisseur_selected": id_fournisseur_sel}
+                    strsql_fournisseur_afficher = """SELECT t_fournisseur.id_fournisseur, t_fournisseur.nom_fournisseur, GROUP_CONCAT(DISTINCT t_mail.nom_mail) AS Email, GROUP_CONCAT(DISTINCT t_telephone.num_telephone) AS Telephone, GROUP_CONCAT(DISTINCT CONCAT_WS(', ', t_adresse.nom_rue_adresse, t_adresse.ville_adresse, t_adresse.npa_adresse)) AS Adresse
+                                                    FROM t_fournisseur
+                                                    LEFT JOIN t_mail_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_mail_avoir_fournisseur.fk_fournisseur
+                                                    LEFT JOIN t_mail ON t_mail_avoir_fournisseur.fk_mail = t_mail.id_mail
+                                                    LEFT JOIN t_telephone_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_telephone_avoir_fournisseur.fk_fournisseur
+                                                    LEFT JOIN t_telephone ON t_telephone_avoir_fournisseur.fk_telephone = t_telephone.id_telephone
+                                                    LEFT JOIN t_adresse_etre_fournisseur ON t_fournisseur.id_fournisseur = t_adresse_etre_fournisseur.fk_fournisseur
+                                                    LEFT JOIN t_adresse ON t_adresse_etre_fournisseur.fk_adresse = t_adresse.id_adresse
+                                                    WHERE t_fournisseur.id_fournisseur = %(value_id_fournisseur_selected)s
+                                                    GROUP BY t_fournisseur.id_fournisseur;
+                                                    """
 
                     mc_afficher.execute(strsql_fournisseur_afficher, valeur_id_fournisseur_selected_dictionnaire)
                 else:
-                    strsql_fournisseur_afficher = """SELECT id_fournisseur, nom_fournisseur FROM t_fournisseur ORDER BY id_fournisseur DESC"""
+                    strsql_fournisseur_afficher = """SELECT t_fournisseur.id_fournisseur, t_fournisseur.nom_fournisseur, GROUP_CONCAT(DISTINCT t_mail.nom_mail) AS Email, GROUP_CONCAT(DISTINCT t_telephone.num_telephone) AS Telephone, GROUP_CONCAT(DISTINCT CONCAT_WS(', ', t_adresse.nom_rue_adresse, t_adresse.ville_adresse, t_adresse.npa_adresse)) AS Adresse
+                                                    FROM t_fournisseur
+                                                    LEFT JOIN t_mail_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_mail_avoir_fournisseur.fk_fournisseur
+                                                    LEFT JOIN t_mail ON t_mail_avoir_fournisseur.fk_mail = t_mail.id_mail
+                                                    LEFT JOIN t_telephone_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_telephone_avoir_fournisseur.fk_fournisseur
+                                                    LEFT JOIN t_telephone ON t_telephone_avoir_fournisseur.fk_telephone = t_telephone.id_telephone
+                                                    LEFT JOIN t_adresse_etre_fournisseur ON t_fournisseur.id_fournisseur = t_adresse_etre_fournisseur.fk_fournisseur
+                                                    LEFT JOIN t_adresse ON t_adresse_etre_fournisseur.fk_adresse = t_adresse.id_adresse
+                                                    GROUP BY t_fournisseur.id_fournisseur
+                                                    ORDER BY t_fournisseur.id_fournisseur DESC;
+                                                    """
 
                     mc_afficher.execute(strsql_fournisseur_afficher)
 
@@ -66,21 +88,20 @@ def fournisseur_afficher(order_by, id_fournisseur_sel):
                 if not data_fournisseur and id_fournisseur_sel == 0:
                     flash("""La table "t_fournisseur" est vide. !!""", "warning")
                 elif not data_fournisseur and id_fournisseur_sel > 0:
-                    # Si l'utilisateur change l'id_fournisseur dans l'URL et que le genre n'existe pas,
-                    flash(f"Le genre demandé n'existe pas !!", "warning")
+                    # Si l'utilisateur change l'id_fournisseur dans l'URL et que le fournisseur n'existe pas,
+                    flash(f"Le fournisseur demandé n'existe pas !!", "warning")
                 else:
-                    # Dans tous les autres cas, c'est que la table "t_fournisseur" est vide.
-                    # OM 2020.04.09 La ligne ci-dessous permet de donner un sentiment rassurant aux utilisateurs.
-                    flash(f"Données Fournisseur affichés !!", "success")
+                    # Dans tous les autres cas, les données des fournisseurs sont affichées.
+                    # OM 2020.04.09 La ligne ci-dessous permet de donner une indication rassurante aux utilisateurs.
+                    flash(f"Données fournisseurs affichées !!", "success")
 
         except Exception as Exception_genres_afficher:
             raise ExceptionGenresAfficher(f"fichier : {Path(__file__).name}  ;  "
                                           f"{fournisseur_afficher.__name__} ; "
                                           f"{Exception_genres_afficher}")
 
-        # Envoie la page "HTML" au serveur.
+    # Envoie la page "HTML" au serveur.
     return render_template("Fournisseur/fournisseur_afficher.html", data=data_fournisseur)
-
 
 """
     Auteur : OM 2021.03.22
@@ -164,20 +185,30 @@ def fournisseur_update_wtf():
         if form_update.validate_on_submit():
             # Récupèrer la valeur du champ depuis "fournisseur_update_wtf.html" après avoir cliqué sur "SUBMIT".
             name_fournisseur_update = form_update.nom_fournisseur_update_wtf.data
-            # Puis la convertir en lettres minuscules.
-            #name_fournisseur_update = name_fournisseur_update.lower()
             email_fournisseur_essai = form_update.email_fournisseur_wtf_essai.data
+            telephone_fournisseur_essai = form_update.telephone_fournisseur_wtf_essai.data
 
-            valeur_update_dictionnaire = {"value_id_fournisseur": id_fournisseur_update,
-                                          "value_name_fournisseur": name_fournisseur_update,
-                                          "email_fournisseur_essai": email_fournisseur_essai
-                                          }
+            valeur_update_dictionnaire = {
+                "value_id_fournisseur": id_fournisseur_update,
+                "value_name_fournisseur": name_fournisseur_update,
+                "email_fournisseur": email_fournisseur_essai,
+                "telephone_fournisseur": telephone_fournisseur_essai
+            }
             print("valeur_update_dictionnaire ", valeur_update_dictionnaire)
 
-            str_sql_update_nomfournisseur = """UPDATE t_fournisseur SET nom_fournisseur = %(value_name_fournisseur)s 
-            WHERE id_fournisseur = %(value_id_fournisseur)s """
+            str_sql_update_fournisseur = """UPDATE t_fournisseur SET
+                nom_fournisseur = %(value_name_fournisseur)s
+                WHERE id_fournisseur = %(value_id_fournisseur)s"""
+
+            str_sql_update_telephone = """UPDATE t_telephone_avoir_fournisseur AS t
+                JOIN t_fournisseur AS f ON t.fk_fournisseur = f.id_fournisseur
+                JOIN t_telephone AS tel ON t.fk_telephone = tel.id_telephone
+                SET tel.num_telephone = %(telephone_fournisseur)s
+                WHERE f.id_fournisseur = %(value_id_fournisseur)s"""
+
             with DBconnection() as mconn_bd:
-                mconn_bd.execute(str_sql_update_nomfournisseur, valeur_update_dictionnaire)
+                mconn_bd.execute(str_sql_update_fournisseur, valeur_update_dictionnaire)
+                mconn_bd.execute(str_sql_update_telephone, valeur_update_dictionnaire)
 
             flash(f"Donnée mise à jour !!", "success")
             print(f"Donnée mise à jour !!")
@@ -188,7 +219,7 @@ def fournisseur_update_wtf():
         elif request.method == "GET":
             # Opération sur la BD pour récupérer "id_fournisseur" et "nom_fournisseur" de la "t_fournisseur"
             str_sql_id_fournisseur = "SELECT id_fournisseur, nom_fournisseur FROM t_fournisseur " \
-                               "WHERE id_fournisseur = %(value_id_fournisseur)s"
+                                     "WHERE id_fournisseur = %(value_id_fournisseur)s"
             valeur_select_dictionnaire = {"value_id_fournisseur": id_fournisseur_update}
             with DBconnection() as mybd_conn:
                 mybd_conn.execute(str_sql_id_fournisseur, valeur_select_dictionnaire)
@@ -201,9 +232,10 @@ def fournisseur_update_wtf():
             form_update.nom_fournisseur_update_wtf.data = data_nom_fournisseur["nom_fournisseur"]
 
     except Exception as Exception_fournisseur_update_wtf:
-        raise ExceptionFournisseurUpdateWtf(f"fichier : {Path(__file__).name}  ;  "
-                                      f"{fournisseur_update_wtf.__name__} ; "
-                                      f"{Exception_fournisseur_update_wtf}")
+        raise ExceptionFournisseurUpdateWtf(
+            f"fichier : {Path(__file__).name}  ;  "
+            f"{fournisseur_update_wtf.__name__} ; "
+            f"{Exception_fournisseur_update_wtf}")
 
     return render_template("Fournisseur/fournisseur_update_wtf.html", form_update=form_update)
 
