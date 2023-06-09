@@ -53,15 +53,15 @@ def fournisseur_afficher(order_by, id_fournisseur_sel):
                     # Constitution d'un dictionnaire pour associer l'id du fournisseur sélectionné avec un nom de variable
                     valeur_id_fournisseur_selected_dictionnaire = {"value_id_fournisseur_selected": id_fournisseur_sel}
                     strsql_fournisseur_afficher = """SELECT t_fournisseur.id_fournisseur, t_fournisseur.nom_fournisseur, GROUP_CONCAT(DISTINCT t_mail.nom_mail) AS Email, GROUP_CONCAT(DISTINCT t_telephone.num_telephone) AS Telephone, GROUP_CONCAT(DISTINCT CONCAT_WS(', ', t_adresse.nom_rue_adresse, t_adresse.ville_adresse, t_adresse.npa_adresse)) AS Adresse
-                                                    FROM t_fournisseur
-                                                    LEFT JOIN t_mail_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_mail_avoir_fournisseur.fk_fournisseur
-                                                    LEFT JOIN t_mail ON t_mail_avoir_fournisseur.fk_mail = t_mail.id_mail
-                                                    LEFT JOIN t_telephone_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_telephone_avoir_fournisseur.fk_fournisseur
-                                                    LEFT JOIN t_telephone ON t_telephone_avoir_fournisseur.fk_telephone = t_telephone.id_telephone
-                                                    LEFT JOIN t_adresse_etre_fournisseur ON t_fournisseur.id_fournisseur = t_adresse_etre_fournisseur.fk_fournisseur
-                                                    LEFT JOIN t_adresse ON t_adresse_etre_fournisseur.fk_adresse = t_adresse.id_adresse
-                                                    WHERE t_fournisseur.id_fournisseur = %(value_id_fournisseur_selected)s
-                                                    GROUP BY t_fournisseur.id_fournisseur;
+                                                        FROM t_fournisseur
+                                                        LEFT JOIN t_mail_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_mail_avoir_fournisseur.fk_fournisseur
+                                                        LEFT JOIN t_mail ON t_mail_avoir_fournisseur.fk_mail = t_mail.id_mail
+                                                        LEFT JOIN t_telephone_avoir_fournisseur ON t_fournisseur.id_fournisseur = t_telephone_avoir_fournisseur.fk_fournisseur
+                                                        LEFT JOIN t_telephone ON t_telephone_avoir_fournisseur.fk_telephone = t_telephone.id_telephone
+                                                        LEFT JOIN t_adresse_etre_fournisseur ON t_fournisseur.id_fournisseur = t_adresse_etre_fournisseur.fk_fournisseur
+                                                        LEFT JOIN t_adresse ON t_adresse_etre_fournisseur.fk_adresse = t_adresse.id_adresse
+                                                        WHERE t_fournisseur.id_fournisseur = %(value_id_fournisseur_selected)s
+                                                        GROUP BY t_fournisseur.id_fournisseur;
                                                     """
 
                     mc_afficher.execute(strsql_fournisseur_afficher, valeur_id_fournisseur_selected_dictionnaire)
@@ -196,29 +196,46 @@ def fournisseur_update_wtf():
             }
             print("valeur_update_dictionnaire ", valeur_update_dictionnaire)
 
-            str_sql_update_fournisseur = """UPDATE t_fournisseur SET
-                nom_fournisseur = %(value_name_fournisseur)s
-                WHERE id_fournisseur = %(value_id_fournisseur)s"""
+            # Instructions pour rechercher si le numéro de téléphone est utilisé uniquement par le fournisseur
+            # Si oui, modifier directement dans t_telephone
+            # Sinon, créer un nouveau numéro de téléphone dans t_telephone
+            # Supprimer la liaison dans t_telephone_avoir_fournisseur
+            # Créer la nouvelle liaison dans t_telephone_avoir_fournisseur
+            str_sql_update_telephone = """
+            UPDATE t_telephone AS tel
+JOIN t_telephone_avoir_fournisseur AS t ON t.fk_telephone = tel.id_telephone
+JOIN t_fournisseur AS f ON t.fk_fournisseur = f.id_fournisseur
+SET tel.num_telephone = %(telephone_fournisseur)s
+WHERE f.id_fournisseur = %(value_id_fournisseur)s
+  AND NOT EXISTS (
+    SELECT * FROM t_telephone_avoir_fournisseur AS t2
+    WHERE t2.fk_telephone = tel.id_telephone
+      AND t2.fk_fournisseur != %(value_id_fournisseur)s
+  )
 
-            str_sql_update_telephone = """UPDATE t_telephone_avoir_fournisseur AS t
-                JOIN t_fournisseur AS f ON t.fk_fournisseur = f.id_fournisseur
-                JOIN t_telephone AS tel ON t.fk_telephone = tel.id_telephone
-                SET tel.num_telephone = %(telephone_fournisseur)s
-                WHERE f.id_fournisseur = %(value_id_fournisseur)s"""
-            # recehrcher si le numéro de téléphone est  utiliser que part le fournisseur
-            # si oui modifié directement dans t_telephone
-            #  si non créer un nouveux numéro de téléphone dans t_telephone
-            # supprimer la liaison dans t_telephone_avoir_fournisseur
-            # creer la nouvelle liaison dans t_telephone_avoir_fournisseur
+            """
 
-            # recehrcher si l'email est  utiliser que part le fournisseur
-            # si oui modifié directement dans t_mail
-            #  si non créer un nouvelle email dans t_mail
-            # supprimer la liaison dans t_mail_avoir_fournisseur
-            # creer la nouvelle liaison dans t_mail_avoir_fournisseur
+            # Instructions pour rechercher si l'email est utilisé uniquement par le fournisseur
+            # Si oui, modifier directement dans t_mail
+            # Sinon, créer un nouvel email dans t_mail
+            # Supprimer la liaison dans t_mail_avoir_fournisseur
+            # Créer la nouvelle liaison dans t_mail_avoir_fournisseur
+            str_sql_update_email = """
+            UPDATE t_mail AS mail
+            JOIN t_mail_avoir_fournisseur AS m ON m.fk_mail = mail.id_mail
+            JOIN t_fournisseur AS f ON m.fk_fournisseur = f.id_fournisseur
+            SET mail.nom_mail = %(email_fournisseur)s
+            WHERE f.id_fournisseur = %(value_id_fournisseur)s
+              AND NOT EXISTS (
+                SELECT * FROM t_mail_avoir_fournisseur AS m2
+                WHERE m2.fk_mail = mail.id_mail
+                  AND m2.fk_fournisseur != %(value_id_fournisseur)s
+              )
+            """
+
             with DBconnection() as mconn_bd:
-                mconn_bd.execute(str_sql_update_fournisseur, valeur_update_dictionnaire)
                 mconn_bd.execute(str_sql_update_telephone, valeur_update_dictionnaire)
+                mconn_bd.execute(str_sql_update_email, valeur_update_dictionnaire)
 
             flash(f"Donnée mise à jour !!", "success")
             print(f"Donnée mise à jour !!")
@@ -228,8 +245,11 @@ def fournisseur_update_wtf():
             return redirect(url_for('fournisseur_afficher', order_by="ASC", id_fournisseur_sel=id_fournisseur_update))
         elif request.method == "GET":
             # Opération sur la BD pour récupérer "id_fournisseur" et "nom_fournisseur" de la "t_fournisseur"
-            str_sql_id_fournisseur = "SELECT id_fournisseur, nom_fournisseur FROM t_fournisseur " \
-                                     "WHERE id_fournisseur = %(value_id_fournisseur)s"
+            str_sql_id_fournisseur = """SELECT f.id_fournisseur, f.nom_fournisseur, tel.num_telephone, f.adresse_fournisseur
+                                        FROM t_fournisseur AS f
+                                        JOIN t_telephone_avoir_fournisseur AS t ON t.fk_fournisseur = f.id_fournisseur
+                                        JOIN t_telephone AS tel ON t.fk_telephone = tel.id_telephone
+                                        """
             valeur_select_dictionnaire = {"value_id_fournisseur": id_fournisseur_update}
             with DBconnection() as mybd_conn:
                 mybd_conn.execute(str_sql_id_fournisseur, valeur_select_dictionnaire)
@@ -248,6 +268,7 @@ def fournisseur_update_wtf():
             f"{Exception_fournisseur_update_wtf}")
 
     return render_template("Fournisseur/fournisseur_update_wtf.html", form_update=form_update)
+
 
 
 """

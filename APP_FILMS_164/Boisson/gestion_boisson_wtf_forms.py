@@ -37,6 +37,7 @@ class FormWTFUpdateBoisson(FlaskForm):
     type_boisson_update_wtf = StringField("Clavioter le type de la boisson", widget=TextArea())
 
     prix_boisson_update_wtf = StringField("Prix de la boisson à la vente ", widget=TextArea())
+    code_barre_boisson_update_wtf = StringField("code barre", widget=TextArea())
     cover_link_boisson_update_wtf = StringField("Lien d'une image de la boisson ", widget=TextArea())
     submit = SubmitField("Update film")
 
