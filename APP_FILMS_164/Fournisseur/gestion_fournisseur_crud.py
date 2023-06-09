@@ -205,7 +205,17 @@ def fournisseur_update_wtf():
                 JOIN t_telephone AS tel ON t.fk_telephone = tel.id_telephone
                 SET tel.num_telephone = %(telephone_fournisseur)s
                 WHERE f.id_fournisseur = %(value_id_fournisseur)s"""
+            # recehrcher si le numéro de téléphone est  utiliser que part le fournisseur
+            # si oui modifié directement dans t_telephone
+            #  si non créer un nouveux numéro de téléphone dans t_telephone
+            # supprimer la liaison dans t_telephone_avoir_fournisseur
+            # creer la nouvelle liaison dans t_telephone_avoir_fournisseur
 
+            # recehrcher si l'email est  utiliser que part le fournisseur
+            # si oui modifié directement dans t_mail
+            #  si non créer un nouvelle email dans t_mail
+            # supprimer la liaison dans t_mail_avoir_fournisseur
+            # creer la nouvelle liaison dans t_mail_avoir_fournisseur
             with DBconnection() as mconn_bd:
                 mconn_bd.execute(str_sql_update_fournisseur, valeur_update_dictionnaire)
                 mconn_bd.execute(str_sql_update_telephone, valeur_update_dictionnaire)

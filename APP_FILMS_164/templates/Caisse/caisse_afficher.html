@@ -8,7 +8,7 @@
 				Caisse
 			</p>
             <table class="table table-bordered table-sm">
-            {% if data %}
+            {% if data_caisse %}
                 <thead>
                     <tr>
                         <th class="align-middle">
@@ -36,7 +36,7 @@
                 </thead>
             {% endif %}
             <tbody>
-            {% for row in data %}
+            {% for row in data_caisse %}
 				<tr>
 					<td class="align-middle">
 						{{ row.id_caisse }}

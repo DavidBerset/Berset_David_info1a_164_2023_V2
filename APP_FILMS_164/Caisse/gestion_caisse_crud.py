@@ -28,10 +28,12 @@ from APP_FILMS_164.Caisse.gestion_caisse_wtf_forms import FormWTFUpdateCaisse
 """
 
 
-@app.route("/caisse_afficher/>", methods=['GET', 'POST'])
+@app.route("/caisse_afficher/", methods=['GET', 'POST'])
 def caisse_afficher():
+
     if request.method == "GET":
         try:
+
             with DBconnection() as mc_afficher:
                 order_by = request.args.get("order_by", "ASC")
                 id_caisse_sel = request.args.get("id_caisse_sel", 0, type=int)
@@ -39,15 +41,19 @@ def caisse_afficher():
                 if order_by == "ASC" and id_caisse_sel == 0:
                     strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse"""
                     mc_afficher.execute(strsql_caisse_afficher)
+
                 elif order_by == "ASC":
                     valeur_id_caisse_selected_dictionnaire = {"value_id_caisse_selected": id_caisse_sel}
                     strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse WHERE id_caisse = %(value_id_caisse_selected)s"""
                     mc_afficher.execute(strsql_caisse_afficher, valeur_id_caisse_selected_dictionnaire)
+
                 else:
                     strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse ORDER BY id_caisse DESC"""
                     mc_afficher.execute(strsql_caisse_afficher)
 
+
                 data_caisse = mc_afficher.fetchall()
+                print(data_caisse)
 
                 if not data_caisse and id_caisse_sel == 0:
                     flash("""La table "t_caisse" est vide. !!""", "warning")
@@ -63,7 +69,6 @@ def caisse_afficher():
 
     return render_template("caisse/caisse_afficher.html")
 
-    #
 
 """
     Auteur : OM 2021.03.22
