@@ -221,16 +221,15 @@ WHERE f.id_fournisseur = %(value_id_fournisseur)s
             # Supprimer la liaison dans t_mail_avoir_fournisseur
             # Créer la nouvelle liaison dans t_mail_avoir_fournisseur
             str_sql_update_email = """
-            UPDATE t_mail AS mail
-            JOIN t_mail_avoir_fournisseur AS m ON m.fk_mail = mail.id_mail
-            JOIN t_fournisseur AS f ON m.fk_fournisseur = f.id_fournisseur
-            SET mail.nom_mail = %(email_fournisseur)s
-            WHERE f.id_fournisseur = %(value_id_fournisseur)s
-              AND NOT EXISTS (
-                SELECT * FROM t_mail_avoir_fournisseur AS m2
-                WHERE m2.fk_mail = mail.id_mail
-                  AND m2.fk_fournisseur != %(value_id_fournisseur)s
-              )
+UPDATE t_mail AS mail
+JOIN t_mail_avoir_fournisseur AS m ON m.fk_mail = mail.id_mail
+JOIN t_fournisseur AS f ON m.fk_fournisseur = f.id_fournisseur
+JOIN t_adresse_etre_fournisseur AS af ON af.fk_fournisseur = f.id_fournisseur
+JOIN t_adresse AS a ON af.fk_adresse = a.id_adresse
+SET a.nom_rue_adresse = %(nom_rue_adresse)s, a.ville_adresse = %(ville_fournisseur)s, a.npa_adresse = %(code_postal_fournisseur)s
+WHERE f.id_fournisseur = %(value_id_fournisseur)s
+ 
+
             """
 
             with DBconnection() as mconn_bd:
@@ -245,10 +244,13 @@ WHERE f.id_fournisseur = %(value_id_fournisseur)s
             return redirect(url_for('fournisseur_afficher', order_by="ASC", id_fournisseur_sel=id_fournisseur_update))
         elif request.method == "GET":
             # Opération sur la BD pour récupérer "id_fournisseur" et "nom_fournisseur" de la "t_fournisseur"
-            str_sql_id_fournisseur = """SELECT f.id_fournisseur, f.nom_fournisseur, tel.num_telephone, f.adresse_fournisseur
-                                        FROM t_fournisseur AS f
-                                        JOIN t_telephone_avoir_fournisseur AS t ON t.fk_fournisseur = f.id_fournisseur
-                                        JOIN t_telephone AS tel ON t.fk_telephone = tel.id_telephone
+            str_sql_id_fournisseur = """SELECT f.nom_fournisseur, tel.num_telephone, a.nom_rue_adresse, a.ville_adresse, a.npa_adresse
+FROM t_fournisseur AS f
+JOIN t_telephone_avoir_fournisseur AS t ON t.fk_fournisseur = f.id_fournisseur
+JOIN t_telephone AS tel ON t.fk_telephone = tel.id_telephone
+JOIN t_adresse_etre_fournisseur AS af ON af.fk_fournisseur = f.id_fournisseur
+JOIN t_adresse AS a ON af.fk_adresse = a.id_adresse
+
                                         """
             valeur_select_dictionnaire = {"value_id_fournisseur": id_fournisseur_update}
             with DBconnection() as mybd_conn:
