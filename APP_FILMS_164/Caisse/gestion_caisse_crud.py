@@ -39,16 +39,16 @@ def caisse_afficher():
                 id_caisse_sel = request.args.get("id_caisse_sel", 0, type=int)
 
                 if order_by == "ASC" and id_caisse_sel == 0:
-                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse"""
+                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse, caisse_avant_fete, caisse_apres_fete, difference_caisse FROM t_caisse"""
                     mc_afficher.execute(strsql_caisse_afficher)
 
                 elif order_by == "ASC":
                     valeur_id_caisse_selected_dictionnaire = {"value_id_caisse_selected": id_caisse_sel}
-                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse WHERE id_caisse = %(value_id_caisse_selected)s"""
+                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse, caisse_avant_fete, caisse_apres_fete, difference_caisse FROM t_caisse WHERE id_caisse = %(value_id_caisse_selected)s"""
                     mc_afficher.execute(strsql_caisse_afficher, valeur_id_caisse_selected_dictionnaire)
 
                 else:
-                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse FROM t_caisse ORDER BY id_caisse DESC"""
+                    strsql_caisse_afficher = """SELECT id_caisse, date_caisse, caisse_avant_fete, caisse_apres_fete, difference_caisse FROM t_caisse ORDER BY id_caisse DESC"""
                     mc_afficher.execute(strsql_caisse_afficher)
 
 
@@ -92,32 +92,32 @@ def caisse_afficher():
 
 @app.route("/caisse_ajouter", methods=['GET', 'POST'])
 def caisse_ajouter():
-    form = FormWTFAjouterFournisseur()
+    form = FormWTFAjouterCaisse()
     if request.method == "POST":
         try:
             if form.validate_on_submit():
-                name_fournisseur = form.nom_fournisseur_wtf.data
+                date_caisse = form.nom_fournisseur_wtf.data
                 # name_fournisseur = name_fournisseur_wtf.lower()
-                valeurs_insertion_dictionnaire = {"value_intitule_fournisseur": name_fournisseur}
+                valeurs_insertion_dictionnaire = {"value_date_caisse": date_caisse}
                 print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)
 
-                strsql_insert_fournisseur = """INSERT INTO t_fournisseur (id_fournisseur,nom_fournisseur) VALUES (NULL,%(value_intitule_fournisseur)s) """
+                strsql_insert_caisse = """INSERT INTO t_caisse (id_caisse,date_caisse) VALUES (NULL,%(value_date_caisse)s) """
 
                 with DBconnection() as mconn_bd:
-                    mconn_bd.execute(strsql_insert_fournisseur, valeurs_insertion_dictionnaire)
+                    mconn_bd.execute(strsql_insert_caisse, valeurs_insertion_dictionnaire)
 
                 flash(f"Données insérées !!", "success")
                 print(f"Données insérées !!")
 
                 # Pour afficher et constater l'insertion de la valeur, on affiche en ordre inverse. (DESC)
-                return redirect(url_for('fournisseur_afficher', order_by='DESC', id_fournisseur_sel=0))
+                return redirect(url_for('caisse_afficher', order_by='DESC', id_fournisseur_sel=0))
 
-        except Exception as Exception_fournisseur_ajouter_wtf:
-            raise ExceptionFournisseurAjouterWtf(f"fichier : {Path(__file__).name}  ;  "
-                                                 f"{fournisseur_ajouter_wtf.__name__} ; "
-                                                 f"{Exception_fournisseur_ajouter_wtf}")
+        except Exception as Exception_caisse_ajouter_wtf:
+            raise ExceptionCaisseAjouterWtf(f"fichier : {Path(__file__).name}  ;  "
+                                                 f"{Caisse_ajouter_wtf.__name__} ; "
+                                                 f"{Exception_caisse_ajouter_wtf}")
 
-    return render_template("Fournisseur/fournisseur_ajouter_wtf.html", form=form)
+    return render_template("Caisse/caisse_ajouter_wtf.html", form=form)
 
 
 """

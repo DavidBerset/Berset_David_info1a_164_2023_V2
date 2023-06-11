@@ -320,6 +320,7 @@ def fournisseur_delete_wtf():
                 print("valeur_delete_dictionnaire ", valeur_delete_dictionnaire)
 
                 str_sql_delete_boisson_fournisseur = """DELETE FROM t_boisson_acheter_fournisseur WHERE fk_fournisseur = %(value_id_fournisseur)s"""
+                str_sql_delete_boisson_retourner = """DELETE FROM t_boisson_retourner_fournisseur WHERE fk_fournisseur = %(value_id_fournisseur)s"""
                 str_sql_delete_idfournisseur = """DELETE FROM t_fournisseur WHERE id_fournisseur = %(value_id_fournisseur)s"""
                 # Manière brutale d'effacer d'abord la "fk_fournisseur", même si elle n'existe pas dans la "t_boisson_acheter_fournisseur"
                 # Ensuite on peut effacer le genre vu qu'il n'est plus "lié" (INNODB) dans la "t_boisson_acheter_fournisseur"
