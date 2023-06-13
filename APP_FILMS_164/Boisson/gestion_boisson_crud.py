@@ -36,11 +36,23 @@ def boisson_add_wtf():
         try:
             if form_add_boisson.validate_on_submit():
                 nom_boisson_add = form_add_boisson.nom_boisson_add_wtf.data
+                type_boisson_add = form_add_boisson.type_boisson_add_wtf.data
+                prix_boisson_add = form_add_boisson.prix_boisson_add_wtf.data
+                cover_link_boisson_add = form_add_boisson.cover_link_boisson_add_wtf.data
+                code_barre_boisson_add = 54  # form_add_boisson.code_barre_boisson_add_wtf.data
 
-                valeurs_insertion_dictionnaire = {"value_nom_boisson": nom_boisson_add}
+                valeurs_insertion_dictionnaire = {
+                                          "value_nom_boisson": nom_boisson_add,
+                                          "value_type_boisson": type_boisson_add,
+                                          "value_prix_vente_boisson": prix_boisson_add,
+                                          "value_cover_link_boisson": cover_link_boisson_add,
+                                          "value_code_barre_boisson": code_barre_boisson_add}
+
                 print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)
 
-                strsql_insert_boisson = """INSERT INTO t_boisson (id_boisson,nom_boisson) VALUES (NULL,%(value_nom_boisson)s) """
+                strsql_insert_boisson = """INSERT INTO t_boisson (nom_boisson, type_boisson, prix_vente_boisson, cover_link_boisson, code_barre_boisson)
+VALUES (%(value_nom_boisson)s, %(value_type_boisson)s, %(value_prix_vente_boisson)s, %(value_cover_link_boisson)s, %(value_code_barre_boisson)s)
+"""
                 with DBconnection() as mconn_bd:
                     mconn_bd.execute(strsql_insert_boisson, valeurs_insertion_dictionnaire)
 
@@ -128,12 +140,12 @@ def boisson_update_wtf():
 
             # Afficher la valeur sélectionnée dans le champ du formulaire "boisson_update_wtf.html"
             form_update_boisson.nom_boisson_update_wtf.data = data_boisson["nom_boisson"]
-            #form_update_boisson.type_boisson_update_wtf.data = data_boisson["type_boisson"]
+            form_update_boisson.type_boisson_update_wtf.data = data_boisson["type_boisson"]
             # Debug simple pour contrôler la valeur dans la console "run" de PyCharm
             print(f" type boisson  ", data_boisson["type_boisson"], "  type ", type(data_boisson["type_boisson"]))
             form_update_boisson.prix_boisson_update_wtf.data = data_boisson["prix_vente_boisson"]
             form_update_boisson.cover_link_boisson_update_wtf.data = data_boisson["cover_link_boisson"]
-            #form_update_boisson.code_barre_boisson_update_wtf.data = data_boisson["code_barre_boisson"]
+            form_update_boisson.code_barre_boisson_update_wtf.data = data_boisson["code_barre_boisson"]
 
     except Exception as Exception_boisson_update_wtf:
         raise ExceptionBoissonUpdateWtf(f"fichier : {Path(__file__).name}  ;  "

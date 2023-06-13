@@ -16,14 +16,13 @@ class FormWTFAddBoisson(FlaskForm):
         Dans le formulaire "fournisseur_ajouter_wtf.html" on impose que le champ soit rempli.
         Définition d'un "bouton" submit avec un libellé personnalisé.
     """
-    nom_boisson_regexp = ""
-    nom_boisson_add_wtf = StringField("Nom de la boisson", validators=[Length(min=2, max=2000, message="min 2 max 20"),
-                                                               Regexp(nom_boisson_regexp,
-                                                                      message="Pas de chiffres, de caractères "
-                                                                              "spéciaux, "
-                                                                              "d'espace à double, de double "
-                                                                              "apostrophe, de double trait union")
-                                                               ])
+    nom_boisson_add_wtf = StringField("Clavioter le nom de la boisson", widget=TextArea())
+    type_boisson_add_wtf = StringField("Clavioter le type de la boisson", widget=TextArea())
+
+    prix_boisson_add_wtf = StringField("Prix de la boisson à la vente ", widget=TextArea())
+    code_barre_boisson_add_wtf = StringField("code barre", widget=TextArea())
+    cover_link_boisson_add_wtf = StringField("Lien d'une image de la boisson ", widget=TextArea())
+    submit = SubmitField("Update film")
 
     submit = SubmitField("Enregistrer boisson")
 

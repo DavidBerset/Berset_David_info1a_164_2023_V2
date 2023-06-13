@@ -203,6 +203,28 @@ def fournisseur_update_wtf():
             # Sinon, créer un nouveau numéro de téléphone dans t_telephone
             # Supprimer la liaison dans t_telephone_avoir_fournisseur
             # Créer la nouvelle liaison dans t_telephone_avoir_fournisseur
+
+            # recherche si le numéro est attribué au fournisseur
+
+            str_sql_count_telephone_fournisseur = """SELECT COUNT(*) AS quantiteUtilise
+                                                        FROM t_telephone_avoir_fournisseur AS taf
+                                                        WHERE taf.fk_fournisseur = t_fournisseur.id_fournisseur"""
+            with DBconnection() as mconn_bd:
+                mconn_bd.execute(str_sql_count_telephone_fournisseur, valeur_update_dictionnaire)
+
+                data_quantiteUtilise = mybd_conn.fetchone()
+
+                if data_quantiteUtilise > 1:
+                    delete_telephone_fournisseur = """DELETE
+                                                        FROM t_telephone_avoir_fournisseur
+                                                        WHERE t_telephone_avoir_fournisseur.fk_fournisseur = %(value_id_fournisseur)s;"""
+
+                    insert_telephone_fournisseur = """insert
+                                                        INTO t_telephone(num_telephone)
+                                                        VALUES %(telephone_fournisseur)s"""
+
+
+
             str_sql_update_telephone = """
             UPDATE t_telephone AS tel
 JOIN t_telephone_avoir_fournisseur AS t ON t.fk_telephone = tel.id_telephone
