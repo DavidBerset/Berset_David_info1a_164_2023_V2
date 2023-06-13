@@ -181,7 +181,6 @@ def fournisseur_update_wtf():
     # Objet formulaire pour l'UPDATE
     form_update = FormWTFUpdateFournisseur()
     try:
-        print(" on submit ", form_update.validate_on_submit())
         if form_update.validate_on_submit():
             # Récupèrer la valeur du champ depuis "fournisseur_update_wtf.html" après avoir cliqué sur "SUBMIT".
             name_fournisseur_update = form_update.nom_fournisseur_update_wtf.data
@@ -192,7 +191,10 @@ def fournisseur_update_wtf():
                 "value_id_fournisseur": id_fournisseur_update,
                 "value_name_fournisseur": name_fournisseur_update,
                 "email_fournisseur": email_fournisseur_essai,
-                "telephone_fournisseur": telephone_fournisseur_essai
+                "telephone_fournisseur": telephone_fournisseur_essai,
+                "nom_rue_adresse": form_update.nom_rue_adresse.data,  # Ajout de la clé manquante
+                "ville_fournisseur": form_update.ville_fournisseur.data,  # Ajout de la clé manquante
+                "code_postal_fournisseur": form_update.code_postal_fournisseur.data  # Ajout de la clé manquante
             }
             print("valeur_update_dictionnaire ", valeur_update_dictionnaire)
 

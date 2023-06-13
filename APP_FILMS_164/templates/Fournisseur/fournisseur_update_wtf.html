@@ -32,7 +32,27 @@
 							<span style="color: red;">[{{ error }}]</span>
 						{% endfor %}
 					</p>
-
+					<p>
+						{{ form_update.nom_rue_adresse.label }}<br>
+						{{ form_update.nom_rue_adresse(size=32) }}<br>
+						{% for error in form_update.nom_rue_adresse.errors %}
+							<span style="color: red;">[{{ error }}]</span>
+						{% endfor %}
+					</p>
+					<p>
+						{{ form_update.ville_fournisseur.label }}<br>
+						{{ form_update.ville_fournisseur(size=32) }}<br>
+						{% for error in form_update.ville_fournisseur.errors %}
+							<span style="color: red;">[{{ error }}]</span>
+						{% endfor %}
+					</p>
+					<p>
+						{{ form_update.code_postal_fournisseur.label }}<br>
+						{{ form_update.code_postal_fournisseur(size=32) }}<br>
+						{% for error in form_update.code_postal_fournisseur.errors %}
+							<span style="color: red;">[{{ error }}]</span>
+						{% endfor %}
+					</p>
 				</div>
 				{{ form_update.submit(class="btn btn-primary") }}
 			</form>
@@ -40,4 +60,3 @@
 	</div>
 </div>
 {% endblock %}
-

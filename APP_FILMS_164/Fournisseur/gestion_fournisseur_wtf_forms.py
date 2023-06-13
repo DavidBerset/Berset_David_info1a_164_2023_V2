@@ -5,6 +5,7 @@
 """
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField
+from wtforms import IntegerField
 from wtforms import SubmitField
 from wtforms.validators import Length, InputRequired, DataRequired
 from wtforms.validators import Regexp
@@ -27,6 +28,7 @@ class FormWTFAjouterFournisseur(FlaskForm):
 
 
 class FormWTFUpdateFournisseur(FlaskForm):
+
     """
         Dans le formulaire "fournisseur_update_wtf.html" on impose que le champ soit rempli.
         Définition d'un "bouton" submit avec un libellé personnalisé.
@@ -61,6 +63,9 @@ class FormWTFUpdateFournisseur(FlaskForm):
                                                                                             #                "apostrophe, de double trait "
                                                                                             #                "union")
                                                                                             # ])
+    nom_rue_adresse = StringField("Nom de rue de l'adresse")  # Champ nom_rue_adresse ajouté
+    ville_fournisseur = StringField("Ville du fournisseur")  # Champ ville_fournisseur ajouté
+    code_postal_fournisseur = IntegerField("Code postal du fournisseur")  # Champ code_postal_fournisseur ajouté
 
     submit = SubmitField("Update le fournisseur")
 
