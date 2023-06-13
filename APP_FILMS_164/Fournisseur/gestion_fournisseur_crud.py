@@ -336,8 +336,22 @@ def fournisseur_delete_wtf():
 
             if form_delete.submit_btn_del.data:
                 with DBconnection() as mconn_bd:
+                    # Supprimer les enregistrements dans la table t_adresse_etre_fournisseur
+                    mconn_bd.execute("DELETE FROM t_adresse_etre_fournisseur WHERE fk_fournisseur = %s", (id_fournisseur_delete,))
+
+                    # Supprimer les enregistrements dans la table t_boisson_acheter_fournisseur
                     mconn_bd.execute("DELETE FROM t_boisson_acheter_fournisseur WHERE fk_fournisseur = %s", (id_fournisseur_delete,))
+
+                    # Supprimer les enregistrements dans la table t_boisson_retourner_fournisseur
                     mconn_bd.execute("DELETE FROM t_boisson_retourner_fournisseur WHERE fk_fournisseur = %s", (id_fournisseur_delete,))
+
+                    # Supprimer les enregistrements dans la table t_mail_avoir_fournisseur
+                    mconn_bd.execute("DELETE FROM t_mail_avoir_fournisseur WHERE fk_fournisseur = %s", (id_fournisseur_delete,))
+
+                    # Supprimer les enregistrements dans la table t_telephone_avoir_fournisseur
+                    mconn_bd.execute("DELETE FROM t_telephone_avoir_fournisseur WHERE fk_fournisseur = %s", (id_fournisseur_delete,))
+
+                    # Ensuite, supprimer la ligne dans la table t_fournisseur
                     mconn_bd.execute("DELETE FROM t_fournisseur WHERE id_fournisseur = %s", (id_fournisseur_delete,))
 
                 flash("Fournisseur définitivement effacé !!", "success")
@@ -357,11 +371,16 @@ def fournisseur_delete_wtf():
             form_delete.nom_fournisseur_delete_wtf.data = data_nom_fournisseur["nom_fournisseur"]
             btn_submit_del = False
 
+
+
     except Exception as Exception_fournisseur_delete_wtf:
+
         raise Exception("Erreur dans la fonction fournisseur_delete_wtf : " + str(Exception_fournisseur_delete_wtf))
 
     return render_template("Fournisseur/fournisseur_delete_wtf.html",
-                           form_delete=form_delete,
-                           btn_submit_del=btn_submit_del,
-                           data_boisson_associes=data_boisson_attribue_fournisseur_delete)
 
+                           form_delete=form_delete,
+
+                           btn_submit_del=btn_submit_del,
+
+                           data_boisson_associes=data_boisson_attribue_fournisseur_delete)
