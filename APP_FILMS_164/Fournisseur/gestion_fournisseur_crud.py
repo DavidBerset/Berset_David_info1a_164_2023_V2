@@ -292,89 +292,52 @@ JOIN t_adresse AS a ON af.fk_adresse = a.id_adresse
 def fournisseur_delete_wtf():
     data_boisson_attribue_fournisseur_delete = None
     btn_submit_del = None
-    # L'utilisateur vient de cliquer sur le bouton "DELETE". Récupère la valeur de "id_fournisseur"
+
     id_fournisseur_delete = request.values['id_fournisseur_btn_delete_html']
 
-    # Objet formulaire pour effacer le genre sélectionné.
     form_delete = FormWTFDeleteFournisseur()
-    try:
-        print(" on submit ", form_delete.validate_on_submit())
-        if request.method == "POST" and form_delete.validate_on_submit():
 
+    try:
+        if request.method == "POST" and form_delete.validate_on_submit():
             if form_delete.submit_btn_annuler.data:
                 return redirect(url_for("fournisseur_afficher", order_by="ASC", id_fournisseur_sel=0))
 
             if form_delete.submit_btn_conf_del.data:
-                # Récupère les données afin d'afficher à nouveau
-                # le formulaire "Fournisseur/fournisseur_delete_wtf.html" lorsque le bouton "Etes-vous sur d'effacer ?" est cliqué.
-                data_boisson_attribue_fournisseur_delete = session['data_boisson_attribue_fournisseur_delete']
-                print("data_boisson_attribue_fournisseur_delete ", data_boisson_attribue_fournisseur_delete)
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute("SELECT * FROM t_fournisseur WHERE id_fournisseur = %s", (id_fournisseur_delete,))
+                    data_boisson_attribue_fournisseur_delete = mconn_bd.fetchall()
 
-                flash(f"Effacer le genre de façon définitive de la BD !!!", "danger")
-                # L'utilisateur vient de cliquer sur le bouton de confirmation pour effacer...
-                # On affiche le bouton "Effacer genre" qui va irrémédiablement EFFACER le genre
+                flash("Effacer le fournisseur de façon définitive de la BD !!!", "danger")
                 btn_submit_del = True
 
             if form_delete.submit_btn_del.data:
-                valeur_delete_dictionnaire = {"value_id_fournisseur": id_fournisseur_delete}
-                print("valeur_delete_dictionnaire ", valeur_delete_dictionnaire)
-
-                str_sql_delete_boisson_fournisseur = """DELETE FROM t_boisson_acheter_fournisseur WHERE fk_fournisseur = %(value_id_fournisseur)s"""
-                str_sql_delete_boisson_retourner = """DELETE FROM t_boisson_retourner_fournisseur WHERE fk_fournisseur = %(value_id_fournisseur)s"""
-                str_sql_delete_idfournisseur = """DELETE FROM t_fournisseur WHERE id_fournisseur = %(value_id_fournisseur)s"""
-                # Manière brutale d'effacer d'abord la "fk_fournisseur", même si elle n'existe pas dans la "t_boisson_acheter_fournisseur"
-                # Ensuite on peut effacer le genre vu qu'il n'est plus "lié" (INNODB) dans la "t_boisson_acheter_fournisseur"
                 with DBconnection() as mconn_bd:
-                    mconn_bd.execute(str_sql_delete_boisson_fournisseur, valeur_delete_dictionnaire)
-                    mconn_bd.execute(str_sql_delete_idfournisseur, valeur_delete_dictionnaire)
+                    mconn_bd.execute("DELETE FROM t_boisson_acheter_fournisseur WHERE fk_fournisseur = %s", (id_fournisseur_delete,))
+                    mconn_bd.execute("DELETE FROM t_boisson_retourner_fournisseur WHERE fk_fournisseur = %s", (id_fournisseur_delete,))
+                    mconn_bd.execute("DELETE FROM t_fournisseur WHERE id_fournisseur = %s", (id_fournisseur_delete,))
 
-                flash(f"Fournisseur définitivement effacé !!", "success")
-                print(f"Fournisseur définitivement effacé !!")
-
-                # afficher les données
+                flash("Fournisseur définitivement effacé !!", "success")
                 return redirect(url_for('fournisseur_afficher', order_by="ASC", id_fournisseur_sel=0))
 
         if request.method == "GET":
-            valeur_select_dictionnaire = {"value_id_fournisseur": id_fournisseur_delete}
-            print(id_fournisseur_delete, type(id_fournisseur_delete))
+            with DBconnection() as mconn_bd:
+                mconn_bd.execute("SELECT * FROM t_boisson_acheter_fournisseur "
+                                 "INNER JOIN t_boisson ON t_boisson_acheter_fournisseur.fk_boisson = t_boisson.id_boisson "
+                                 "INNER JOIN t_fournisseur ON t_boisson_acheter_fournisseur.fk_fournisseur = t_fournisseur.id_fournisseur "
+                                 "WHERE fk_fournisseur = %s", (id_fournisseur_delete,))
+                data_boisson_attribue_fournisseur_delete = mconn_bd.fetchall()
 
-            # Requête qui affiche tous les Boisson_Fournisseur qui ont le genre que l'utilisateur veut effacer
-            str_sql_fournisseur_boisson_delete = """SELECT id_boisson_acheter_fournisseur, nom_boisson, id_fournisseur, nom_fournisseur FROM t_boisson_acheter_fournisseur 
-                                            INNER JOIN t_boisson ON t_boisson_acheter_fournisseur.fk_boisson = t_boisson.id_boisson
-                                            INNER JOIN t_fournisseur ON t_boisson_acheter_fournisseur.fk_fournisseur = t_fournisseur.id_fournisseur
-                                            WHERE fk_fournisseur = %(value_id_fournisseur)s"""
+                mconn_bd.execute("SELECT id_fournisseur, nom_fournisseur FROM t_fournisseur WHERE id_fournisseur = %s", (id_fournisseur_delete,))
+                data_nom_fournisseur = mconn_bd.fetchone()
 
-            with DBconnection() as mydb_conn:
-                mydb_conn.execute(str_sql_fournisseur_boisson_delete, valeur_select_dictionnaire)
-                data_boisson_attribue_fournisseur_delete = mydb_conn.fetchall()
-                print("data_boisson_attribue_fournisseur_delete...", data_boisson_attribue_fournisseur_delete)
-
-                # Nécessaire pour mémoriser les données afin d'afficher à nouveau
-                # le formulaire "Fournisseur/fournisseur_delete_wtf.html" lorsque le bouton "Etes-vous sur d'effacer ?" est cliqué.
-                session['data_boisson_attribue_fournisseur_delete'] = data_boisson_attribue_fournisseur_delete
-
-                # Opération sur la BD pour récupérer "id_fournisseur" et "nom_fournisseur" de la "t_fournisseur"
-                str_sql_id_fournisseur = "SELECT id_fournisseur, nom_fournisseur FROM t_fournisseur WHERE id_fournisseur = %(value_id_fournisseur)s"
-
-                mydb_conn.execute(str_sql_id_fournisseur, valeur_select_dictionnaire)
-                # Une seule valeur est suffisante "fetchone()",
-                # vu qu'il n'y a qu'un seul champ "nom genre" pour l'action DELETE
-                data_nom_fournisseur = mydb_conn.fetchone()
-                print("data_nom_fournisseur ", data_nom_fournisseur, " type ", type(data_nom_fournisseur), " fournisseur ",
-                      data_nom_fournisseur["nom_fournisseur"])
-
-            # Afficher la valeur sélectionnée dans le champ du formulaire "fournisseur_delete_wtf.html"
             form_delete.nom_fournisseur_delete_wtf.data = data_nom_fournisseur["nom_fournisseur"]
-
-            # Le bouton pour l'action "DELETE" dans le form. "fournisseur_delete_wtf.html" est caché.
             btn_submit_del = False
 
     except Exception as Exception_fournisseur_delete_wtf:
-        raise ExceptionFournisseurDeleteWtf(f"fichier : {Path(__file__).name}  ;  "
-                                      f"{fournisseur_delete_wtf.__name__} ; "
-                                      f"{Exception_fournisseur_delete_wtf}")
+        raise Exception("Erreur dans la fonction fournisseur_delete_wtf : " + str(Exception_fournisseur_delete_wtf))
 
     return render_template("Fournisseur/fournisseur_delete_wtf.html",
                            form_delete=form_delete,
                            btn_submit_del=btn_submit_del,
                            data_boisson_associes=data_boisson_attribue_fournisseur_delete)
+
