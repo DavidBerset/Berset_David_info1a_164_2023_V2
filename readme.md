@@ -14,9 +14,11 @@ Installation
 ## SOMMAIRE
 
 
-1. [x] installer le dossier sur github
-2. [x] supprimer  le fichier venv
-2. [x] Lancer le dossier start.bat
-3. [x] appuyer sur l'ip dans la console
+1. [x] Installer le dossier sur github
+2. [x] Supprimer  le fichier venv
+3. [x] Lancer Laragon
+4. [x] Appuyer sur le bouton start
+5. [x] Lancer le fichier start.bat
+6. [x] Appuyer sur l'ip dans la console
 
                        
