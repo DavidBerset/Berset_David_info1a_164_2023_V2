@@ -199,25 +199,58 @@ def boisson_delete_wtf():
             valeur_delete_dictionnaire = {"value_id_boisson": id_boisson_delete}
             print("valeur_delete_dictionnaire ", valeur_delete_dictionnaire)
 
-            str_sql_delete_fk_boisson_fournisseur = """DELETE FROM t_boisson_acheter_fournisseur WHERE fk_boisson = %(value_id_boisson)s"""
-            str_sql_delete_boisson = """DELETE FROM t_boisson WHERE id_boisson = %(value_id_boisson)s"""
-            # Manière brutale d'effacer d'abord la "fk_boisson", même si elle n'existe pas dans la "t_boisson_acheter_fournisseur"
-            # Ensuite on peut effacer la boisson vu qu'il n'est plus "lié" (INNODB) dans la "t_boisson_acheter_fournisseur"
+            str_sql_delete_pers_sortie_boisson = """
+            DELETE FROM t_pers_sortie_boisson
+            WHERE fk_boisson = %(value_id_boisson)s
+            """
+
+            str_sql_delete_boisson_stocker_contenance = """
+            DELETE FROM t_boisson_stocker_contenance
+            WHERE fk_boisson = %(value_id_boisson)s
+            """
+
+            str_sql_delete_boisson_acheter_fournisseur = """
+            DELETE FROM t_boisson_acheter_fournisseur
+            WHERE fk_boisson = %(value_id_boisson)s
+            """
+
+            str_sql_delete_boisson_retourner_fournisseur = """
+            DELETE FROM t_boisson_retourner_fournisseur
+            WHERE fk_boisson = %(value_id_boisson)s
+            """
+
+            str_sql_delete_boisson = """
+            DELETE FROM t_boisson
+            WHERE id_boisson = %(value_id_boisson)s
+            """
+
             with DBconnection() as mconn_bd:
-                mconn_bd.execute(str_sql_delete_fk_boisson_fournisseur, valeur_delete_dictionnaire)
+                # Supprimer les enregistrements associés dans t_pers_sortie_boisson
+                mconn_bd.execute(str_sql_delete_pers_sortie_boisson, valeur_delete_dictionnaire)
+                # Supprimer les enregistrements associés dans t_boisson_stocker_contenance
+                mconn_bd.execute(str_sql_delete_boisson_stocker_contenance, valeur_delete_dictionnaire)
+                # Supprimer les enregistrements associés dans t_boisson_acheter_fournisseur
+                mconn_bd.execute(str_sql_delete_boisson_acheter_fournisseur, valeur_delete_dictionnaire)
+                # Supprimer les enregistrements associés dans t_boisson_retourner_fournisseur
+                mconn_bd.execute(str_sql_delete_boisson_retourner_fournisseur, valeur_delete_dictionnaire)
+                # Supprimer la boisson
                 mconn_bd.execute(str_sql_delete_boisson, valeur_delete_dictionnaire)
 
-            flash(f"Film définitivement effacé !!", "success")
-            print(f"Film définitivement effacé !!")
+            flash(f"Boisson définitivement effacée !!", "success")
+            print(f"Boisson définitivement effacée !!")
 
-            # afficher les données
+            # Afficher les données
             return redirect(url_for('boisson_fournisseur_afficher', id_boisson_sel=0))
+
         if request.method == "GET":
             valeur_select_dictionnaire = {"value_id_boisson": id_boisson_delete}
             print(id_boisson_delete, type(id_boisson_delete))
 
-            # Requête qui affiche la boisson qui doit être efffacé.
-            str_sql_fournisseur_boisson_delete = """SELECT * FROM t_fournisseur WHERE id_fournisseur = %(value_id_boisson)s"""
+            # Requête qui affiche la boisson qui doit être effacée.
+            str_sql_fournisseur_boisson_delete = """
+            SELECT * FROM t_fournisseur
+            WHERE id_fournisseur = %(value_id_boisson)s
+            """
 
             with DBconnection() as mydb_conn:
                 mydb_conn.execute(str_sql_fournisseur_boisson_delete, valeur_select_dictionnaire)
@@ -233,11 +266,11 @@ def boisson_delete_wtf():
 
     except Exception as Exception_boisson_delete_wtf:
         raise ExceptionBoissonDeleteWtf(f"fichier : {Path(__file__).name}  ;  "
-                                     f"{boisson_delete_wtf.__name__} ; "
-                                     f"{Exception_boisson_delete_wtf}")
+                                        f"{boisson_delete_wtf.__name__} ; "
+                                        f"{Exception_boisson_delete_wtf}")
 
     return render_template("Boisson/boisson_delete_wtf.html",
-                           form_delete_boisson=form_delete_boisson,
-                           btn_submit_del=btn_submit_del,
-                           data_boisson_del=data_boisson_delete
-                           )
+                            form_delete_boisson=form_delete_boisson,
+                            btn_submit_del=btn_submit_del,
+                            data_boisson_del=data_boisson_delete
+                            )
