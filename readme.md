@@ -16,7 +16,7 @@ Installation
 
 1. [x] installer le dossier sur github
 2. [x] supprimer  le fichier venv
-2. [x] Lancer le dossier start.sh
-3. [x] appuyer sur l'ip 
+2. [x] Lancer le dossier start.bat
+3. [x] appuyer sur l'ip dans la console
 
                        
