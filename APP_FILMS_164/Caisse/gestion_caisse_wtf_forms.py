@@ -16,13 +16,10 @@ class FormWTFAjouterCaisse(FlaskForm):
         Définition d'un "bouton" submit avec un libellé personnalisé.
     """
     # date_Caisse_regexp = "^([A-Z]|[a-zÀ-ÖØ-öø-ÿ])[A-Za-zÀ-ÖØ-öø-ÿ]*['\- ]?[A-Za-zÀ-ÖØ-öø-ÿ]+$"
-    # date_Caisse_wtf = StringField("Insérer le fournisseurs", validators=[Length(min=2, max=20, message="min 2 max 20"),
-    #                                                                Regexp(date_caisse_regexp,
-    #                                                                       message="Pas de chiffres, de caractères "
-    #                                                                               "spéciaux, "
-    #                                                                               "d'espace à double, de double "
-    #                                                                               "apostrophe, de double trait union")
-    #                                                                ])
+    date_Caisse_wtf = DateField("Insérer le fournisseur",
+                                format="%Y-%m-%d",
+                                validators=[],
+                                render_kw={"placeholder": "YYYY-MM-DD"})
     submit = SubmitField("Enregistrer la nouvelle date de caisse")
 
 

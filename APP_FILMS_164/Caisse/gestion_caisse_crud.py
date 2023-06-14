@@ -96,7 +96,7 @@ def caisse_ajouter():
     if request.method == "POST":
         try:
             if form.validate_on_submit():
-                date_caisse = form.nom_fournisseur_wtf.data
+                date_caisse = form.date_caisse_wtf.data
                 # name_fournisseur = name_fournisseur_wtf.lower()
                 valeurs_insertion_dictionnaire = {"value_date_caisse": date_caisse}
                 print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)

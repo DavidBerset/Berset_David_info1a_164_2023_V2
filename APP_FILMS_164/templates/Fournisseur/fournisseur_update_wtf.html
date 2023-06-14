@@ -26,6 +26,12 @@
 						{% endfor %}
 					</p>
 					<p>
+						{% for telephone in form_update.telephones %}
+							{{telephone.telephone.label}}: {{ telephone.telephone}}
+						{% endfor %}
+						{{ form_update.ajoute_tel(class="btn btn-primary") }}
+					</p>
+					<p>
 						{{ form_update.telephone_fournisseur_wtf_essai.label }}<br>
 						{{ form_update.telephone_fournisseur_wtf_essai(size=32) }}<br>
 						{% for error in form_update.telephone_fournisseur_wtf_essai.errors %}
