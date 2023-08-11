@@ -11,7 +11,7 @@ from flask import url_for
 
 from APP_FILMS_164.database.database_tools import DBconnection
 from APP_FILMS_164.erreurs.exceptions import *
-from APP_FILMS_164.Boisson.gestion_boisson_wtf_forms import FormWTFUpdateBoisson, FormWTFAddBoisson, FormWTFDeleteBoisson
+from APP_FILMS_164.Boisson.gestion_boisson_wtf_forms import FormWTFUpdateBoisson, FormWTFAddBoisson, FormWTFDeleteBoisson, FormWTFStock
 
 """Ajouter un film grâce au formulaire ".html"
 Auteur : OM 2022.04.11
@@ -176,7 +176,7 @@ def boisson_delete_wtf():
     # L'utilisateur vient de cliquer sur le bouton "DELETE". Récupère la valeur de "id_fournisseur"
     id_boisson_delete = request.values['id_film_btn_delete_html']
 
-    # Objet formulaire pour effacer la boisson sélectionné.
+    # Objet formulaire pour effacer la boisson sélectionnée.
     form_delete_boisson = FormWTFDeleteBoisson()
     try:
         # Si on clique sur "ANNULER", afficher tous les Boisson.
@@ -247,13 +247,13 @@ def boisson_delete_wtf():
             print(id_boisson_delete, type(id_boisson_delete))
 
             # Requête qui affiche la boisson qui doit être effacée.
-            str_sql_fournisseur_boisson_delete = """
-            SELECT * FROM t_fournisseur
-            WHERE id_fournisseur = %(value_id_boisson)s
+            str_sql_boisson_delete = """
+            SELECT * FROM t_boisson
+            WHERE id_boisson = %(value_id_boisson)s
             """
 
             with DBconnection() as mydb_conn:
-                mydb_conn.execute(str_sql_fournisseur_boisson_delete, valeur_select_dictionnaire)
+                mydb_conn.execute(str_sql_boisson_delete, valeur_select_dictionnaire)
                 data_boisson_delete = mydb_conn.fetchall()
                 print("data_boisson_delete...", data_boisson_delete)
 
@@ -274,3 +274,56 @@ def boisson_delete_wtf():
                             btn_submit_del=btn_submit_del,
                             data_boisson_del=data_boisson_delete
                             )
+
+@app.route("/ajouter_stock/<int:id_boisson>", methods=['GET', 'POST'])
+def ajouter_stock(id_boisson):
+    form = FormWTFStock()
+
+    if form.validate_on_submit():
+        stock_a_ajouter = form.stock_boisson.data
+
+        with DBconnection() as mconn_bd:
+            str_sql_update_stock = """
+            UPDATE t_boisson
+            SET stock_boisson = stock_boisson + %(value_stock)s
+            WHERE id_boisson = %(value_id_boisson)s
+            """
+            valeur_update_dictionnaire = {
+                "value_id_boisson": id_boisson,
+                "value_stock": stock_a_ajouter
+            }
+            mconn_bd.execute(str_sql_update_stock, valeur_update_dictionnaire)
+
+        flash(f"Stock ajouté avec succès !", "success")
+        return redirect(url_for('boisson_fournisseur_afficher', id_boisson_sel=id_boisson))
+
+    return render_template("Boisson/ajouter_stock.html", form=form)
+
+@app.route("/retirer_stock/<int:id_boisson>", methods=['GET', 'POST'])
+def retirer_stock(id_boisson):
+    form = FormWTFStock()
+
+    if form.validate_on_submit():
+        stock_modification = form.stock_boisson.data
+
+        with DBconnection() as mconn_bd:
+            str_sql_update_stock = """
+                UPDATE t_boisson
+                SET stock_boisson = stock_boisson - %(value_stock)s
+                WHERE id_boisson = %(value_id_boisson)s
+            """
+
+            valeur_update_dictionnaire = {
+                "value_id_boisson": id_boisson,
+                "value_stock": stock_modification
+            }
+            mconn_bd.execute(str_sql_update_stock, valeur_update_dictionnaire)
+
+        flash(f"Stock retiré avec succès !", "success")
+        return redirect(url_for('boisson_fournisseur_afficher', id_boisson_sel=id_boisson))
+
+    return render_template("Boisson/retirer_stock.html", form=form, id_boisson=id_boisson)
+
+
+
+

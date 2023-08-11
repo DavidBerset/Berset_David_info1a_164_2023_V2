@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %} Retirer Stock {% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Retirer Stock</h2>
+            <form action="{{ url_for('retirer_stock', id_boisson=id_boisson) }}" method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.stock_boisson.label }}
+                    {{ form.stock_boisson(size=32, class="form-control") }}
+                    {% for error in form.stock_boisson.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.submit_retirer(class="btn btn-danger") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

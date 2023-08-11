@@ -91,7 +91,7 @@ def caisse_afficher():
 
 
 @app.route("/caisse_ajouter", methods=['GET', 'POST'])
-def caisse_ajouter():
+def caisse_ajouter_wtf():
     form = FormWTFAjouterCaisse()
     if request.method == "POST":
         try:
@@ -142,60 +142,70 @@ def caisse_ajouter():
 
 @app.route("/caisse_update", methods=['GET', 'POST'])
 def caisse_update_wtf():
-    # L'utilisateur vient de cliquer sur le bouton "EDIT". Récupère la valeur de "id_fournisseur"
-    id_fournisseur_update = request.values['id_fournisseur_btn_edit_html']
+    # L'utilisateur vient de cliquer sur le bouton "EDIT". Récupère la valeur de l'id de la caisse
+    id_caisse_update = request.values['id_caisse_btn_edit_html']
 
     # Objet formulaire pour l'UPDATE
-    form_update = FormWTFUpdateFournisseur()
-    try:
-        print(" on submit ", form_update.validate_on_submit())
-        if form_update.validate_on_submit():
-            # Récupèrer la valeur du champ depuis "fournisseur_update_wtf.html" après avoir cliqué sur "SUBMIT".
-            name_fournisseur_update = form_update.nom_fournisseur_update_wtf.data
-            # Puis la convertir en lettres minuscules.
-            # name_fournisseur_update = name_fournisseur_update.lower()
-            email_fournisseur_essai = form_update.email_fournisseur_wtf_essai.data
+    form_update = FormWTFUpdateCaisse()
 
+    if request.method == "POST":
+        try:
+            if form_update.validate_on_submit():
+                date_caisse_update = form_update.date_caisse_update_wtf.data
+                caisse_avant_fete_update = form_update.caisse_avant_fete_update_wtf.data
+                caisse_apres_fete_update = form_update.caisse_apres_fete_update_wtf.data
+                difference_caisse_update = caisse_apres_fete_update - caisse_avant_fete_update
 
+                valeur_update_dictionnaire = {
+                    "value_id_caisse": id_caisse_update,
+                    "value_date_caisse": date_caisse_update,
+                    "value_caisse_avant_fete": caisse_avant_fete_update,
+                    "value_caisse_apres_fete": caisse_apres_fete_update,
+                    "value_difference_caisse": difference_caisse_update
+                }
 
-            valeur_update_dictionnaire = {"value_id_fournisseur": id_fournisseur_update,
-                                          "value_name_fournisseur": name_fournisseur_update,
-                                          "email_fournisseur_essai": email_fournisseur_essai
-                                          }
-            print("valeur_update_dictionnaire ", valeur_update_dictionnaire)
+                str_sql_update_caisse = """UPDATE t_caisse 
+                                           SET date_caisse = %(value_date_caisse)s, 
+                                               caisse_avant_fete = %(value_caisse_avant_fete)s, 
+                                               caisse_apres_fete = %(value_caisse_apres_fete)s, 
+                                               difference_caisse = %(value_difference_caisse)s
+                                           WHERE id_caisse = %(value_id_caisse)s"""
 
-            str_sql_update_nomfournisseur = """UPDATE t_fournisseur SET nom_fournisseur = %(value_name_fournisseur)s 
-            WHERE id_fournisseur = %(value_id_fournisseur)s """
-            with DBconnection() as mconn_bd:
-                mconn_bd.execute(str_sql_update_nomfournisseur, valeur_update_dictionnaire)
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(str_sql_update_caisse, valeur_update_dictionnaire)
 
-            flash(f"Donnée mise à jour !!", "success")
-            print(f"Donnée mise à jour !!")
+                flash(f"Donnée mise à jour !!", "success")
 
-            # afficher et constater que la donnée est mise à jour.
-            # Affiche seulement la valeur modifiée, "ASC" et l'"id_fournisseur_update"
-            return redirect(url_for('fournisseur_afficher', order_by="ASC", id_fournisseur_sel=id_fournisseur_update))
-        elif request.method == "GET":
-            # Opération sur la BD pour récupérer "id_fournisseur" et "nom_fournisseur" de la "t_fournisseur"
-            str_sql_id_fournisseur = "SELECT id_fournisseur, nom_fournisseur FROM t_fournisseur " \
-                                     "WHERE id_fournisseur = %(value_id_fournisseur)s"
-            valeur_select_dictionnaire = {"value_id_fournisseur": id_fournisseur_update}
-            with DBconnection() as mybd_conn:
-                mybd_conn.execute(str_sql_id_fournisseur, valeur_select_dictionnaire)
-            # Une seule valeur est suffisante "fetchone()", vu qu'il n'y a qu'un seul champ "nom fournisseur" pour l'UPDATE
-            data_nom_fournisseur = mybd_conn.fetchone()
-            print("data_nom_fournisseur ", data_nom_fournisseur, " type ", type(data_nom_fournisseur), " genre ",
-                  data_nom_fournisseur["nom_fournisseur"])
+                # Redirige vers la page d'affichage des caisses avec l'ordre ASC et sans sélection d'id
+                return redirect(url_for('caisse_afficher', order_by='ASC', id_caisse_sel=0))
 
-            # Afficher la valeur sélectionnée dans les champs du formulaire "fournisseur_update_wtf.html"
-            form_update.nom_fournisseur_update_wtf.data = data_nom_fournisseur["nom_fournisseur"]
+        except Exception as Exception_caisse_update_wtf:
+            # Gérer les exceptions
+            raise ExceptionCaisseUpdateWtf(f"Erreur lors de la mise à jour de la caisse : {Exception_caisse_update_wtf}")
 
-    except Exception as Exception_fournisseur_update_wtf:
-        raise ExceptionFournisseurUpdateWtf(f"fichier : {Path(__file__).name}  ;  "
-                                            f"{fournisseur_update_wtf.__name__} ; "
-                                            f"{Exception_fournisseur_update_wtf}")
+    elif request.method == "GET":
+        try:
+            valeur_select_dictionnaire = {"value_id_caisse": id_caisse_update}
 
-    return render_template("Fournisseur/fournisseur_update_wtf.html", form_update=form_update)
+            # Requête pour récupérer les données de la caisse à mettre à jour
+            str_sql_select_caisse = """SELECT id_caisse, date_caisse, caisse_avant_fete, caisse_apres_fete 
+                                       FROM t_caisse WHERE id_caisse = %(value_id_caisse)s"""
+
+            with DBconnection() as mydb_conn:
+                mydb_conn.execute(str_sql_select_caisse, valeur_select_dictionnaire)
+                data_caisse = mydb_conn.fetchone()
+
+            # Remplir les champs du formulaire avec les données de la caisse
+            form_update.date_caisse_update_wtf.data = data_caisse["date_caisse"]
+            form_update.caisse_avant_fete_update_wtf.data = data_caisse["caisse_avant_fete"]
+            form_update.caisse_apres_fete_update_wtf.data = data_caisse["caisse_apres_fete"]
+
+        except Exception as Exception_caisse_get_update_data:
+            # Gérer les exceptions
+            raise ExceptionCaisseUpdateWtf(f"Erreur lors de la récupération des données de mise à jour de la caisse : {Exception_caisse_get_update_data}")
+
+    return render_template("Caisse/caisse_update_wtf.html", form_update=form_update)
+
 
 
 """

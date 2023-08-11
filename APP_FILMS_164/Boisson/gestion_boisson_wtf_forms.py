@@ -4,11 +4,11 @@ Auteur : OM 2022.04.11
 
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, DateField
-from wtforms import SubmitField
+from wtforms import StringField, IntegerField, DateField, SubmitField, SelectField
 from wtforms.validators import Length, InputRequired, NumberRange, DataRequired
 from wtforms.validators import Regexp
 from wtforms.widgets import TextArea
+from wtforms.validators import InputRequired, NumberRange
 
 
 class FormWTFAddBoisson(FlaskForm):
@@ -53,3 +53,12 @@ class FormWTFDeleteBoisson(FlaskForm):
     submit_btn_del_boisson = SubmitField("Effacer boisson")
     submit_btn_conf_del_boisson = SubmitField("Etes-vous sur d'effacer ?")
     submit_btn_annuler = SubmitField("Annuler")
+
+
+class FormWTFStock(FlaskForm):
+    stock_boisson = IntegerField("Stock à ajouter", validators=[InputRequired(), NumberRange(min=1)])
+    submit_ajouter = SubmitField("Ajouter au stock")
+    submit_retirer = SubmitField("Retirer du stock")
+
+
+

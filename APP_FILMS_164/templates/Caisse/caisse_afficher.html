@@ -54,10 +54,10 @@
 						{{ row.difference_caisse }}
 					</td>
 					<td class="text-center" class="align-middle">
-						<a class="btn btn-warning" href="{{ url_for('caisse_update_wtf', id_fournisseur_btn_edit_html=row.id_fournisseur) }}" role="button">Edit</a>
+						<a class="btn btn-warning" href="{{ url_for('caisse_update_wtf', id_caisse=row.id_caisse) }}" role="button">Edit</a>
 					</td>
 					<td class="text-center" class="align-middle">
-						<a class="btn btn-danger" href="{{ url_for('caisse_delete_wtf', id_fournisseur_btn_delete_html=row.id_fournisseur) }}" role="button">Delete</a>
+						<a class="btn btn-danger" href="{{ url_for('caisse_delete_wtf', id_caisse=row.id_caisse) }}" role="button">Delete</a>
 					</td>
 				</tr>
             {% else %}

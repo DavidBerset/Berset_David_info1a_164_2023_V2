@@ -12,7 +12,7 @@ from flask import url_for
 from APP_FILMS_164 import app
 from APP_FILMS_164.database.database_tools import DBconnection
 from APP_FILMS_164.erreurs.exceptions import *
-from APP_FILMS_164.Fournisseur.gestion_fournisseur_wtf_forms import FormWTFAjouterFournisseur, FormWTFTelephone, FormWTFDeleteFournisseur, FormWTFUpdateFournisseur
+from APP_FILMS_164.Fournisseur.gestion_fournisseur_wtf_forms import FormWTFAjouterFournisseur, FormWTFDeleteFournisseur, FormWTFUpdateFournisseur
 
 """
     Auteur : OM 2021.03.16
@@ -175,197 +175,103 @@ def fournisseur_ajouter_wtf():
 def fournisseur_update_wtf():
     # L'utilisateur vient de cliquer sur le bouton "EDIT". Récupère la valeur de "id_fournisseur"
     id_fournisseur_update = request.values['id_fournisseur_btn_edit_html']
-
     # Objet formulaire pour l'UPDATE
     form_update = FormWTFUpdateFournisseur()
     try:
-        # On récupère la liste des champs de téléphone
-        KeyListTelephone = list(filter(re.compile("^telephone\d+$").match, request.values.keys()))
-        # On remet les téléphone dans le sous-formulaire
-        telephones = []
-        for keytel in KeyListTelephone:
-            tel_form = FormWTFTelephone()
-            tel_form.telephone.id = int(keytel.replace("telephone", ""))
-            tel_form.telephone.name = keytel
-            tel_form.telephone.data = request.values[keytel]
-            telephones.append(tel_form)
-        form_update.telephones = telephones
-
-        if form_update.ajoute_tel.data:
-            tel_form = FormWTFTelephone()
-            tel_form.telephone.name = "telephone0"
-            form_update.telephones.append(tel_form)
-
-        elif form_update.validate_on_submit():
-            # Récupèrer la valeur du champ depuis "fournisseur_update_wtf.html" après avoir cliqué sur "SUBMIT".
+        if form_update.validate_on_submit():
+            # Récupérer les valeurs des champs depuis "fournisseur_update_wtf.html" après avoir cliqué sur "SUBMIT".
             name_fournisseur_update = form_update.nom_fournisseur_update_wtf.data
             email_fournisseur_essai = form_update.email_fournisseur_wtf_essai.data
             telephone_fournisseur_essai = form_update.telephone_fournisseur_wtf_essai.data
+            nom_rue_adresse_update = form_update.nom_rue_adresse_wtf.data
+            ville_fournisseur = form_update.ville_fournisseur.data
+            code_postal_fournisseur = form_update.code_postal_fournisseur.data
 
+            # Créer un dictionnaire avec les valeurs à mettre à jour dans la base de données
             valeur_update_dictionnaire = {
                 "value_id_fournisseur": id_fournisseur_update,
                 "value_name_fournisseur": name_fournisseur_update,
                 "email_fournisseur": email_fournisseur_essai,
                 "telephone_fournisseur": telephone_fournisseur_essai,
-                "nom_rue_adresse": form_update.nom_rue_adresse.data,
-                "ville_fournisseur": form_update.ville_fournisseur.data,
-                "code_postal_fournisseur": form_update.code_postal_fournisseur.data
+                "nom_rue_adresse": nom_rue_adresse_update,
+                "ville_fournisseur": ville_fournisseur,
+                "code_postal_fournisseur": code_postal_fournisseur
             }
+            print("valeur_update_dictionnaire ", valeur_update_dictionnaire)
+            # Instructions pour rechercher si le numéro de téléphone est utilisé uniquement par le fournisseur
+            # Si oui, modifier directement dans t_telephone
+            # Sinon, créer un nouveau numéro de téléphone dans t_telephone
+            # Supprimer la liaison dans t_telephone_avoir_fournisseur
+            # Créer la nouvelle liaison dans t_telephone_avoir_fournisseur
+            str_sql_update_telephone = """
+                UPDATE t_telephone AS tel
+    JOIN t_telephone_avoir_fournisseur AS t ON t.fk_telephone = tel.id_telephone
+    JOIN t_fournisseur AS f ON t.fk_fournisseur = f.id_fournisseur
+    SET tel.num_telephone = %(telephone_fournisseur)s
+    WHERE f.id_fournisseur = %(value_id_fournisseur)s
+      AND NOT EXISTS (
+        SELECT * FROM t_telephone_avoir_fournisseur AS t2
+        WHERE t2.fk_telephone = tel.id_telephone
+          AND t2.fk_fournisseur != %(value_id_fournisseur)s
+      )
+                """
 
-            # boucler sur la liste des numéro
-            #   et mise a jours des numéros avec un id supérieur et égal a 1
-            #   puis exectuer pour chacun des autre un ajout en db
-            for telephoneForm in form_update.telephones:
-                str_sql_action_telephone =""
-                print(telephoneForm.telephone.id)
-                if telephoneForm.telephone.id >= 1:
-                    valeur_update_dictionnaire["id_telephone"] = telephoneForm.telephone.id
-                    valeur_update_dictionnaire["numero_telephone"] = telephoneForm.telephone.data
-                    str_sql_action_telephone = """
-                    UPDATE t_telephone AS tel
-                    SET tel.num_telephone = %(numero_telephone)s
-                    WHERE tel.id_telephone = %(id_telephone)s
-                    """
-                    with DBconnection() as mconn_bd:
-                        mconn_bd.execute(str_sql_action_telephone, valeur_update_dictionnaire)
-                else:
-                    # création du numéro de telephone
-                    valeur_update_dictionnaire["numero_telephone"] = telephoneForm.telephone.data
-                    str_sql_action_telephone = """
-                    INSERT INTO t_telephone (id_telephone,num_telephone) VALUES (NULL,%(numero_telephone)s)
-                    """
-                    with DBconnection() as mconn_bd:
-                        mconn_bd.execute(str_sql_action_telephone, valeur_update_dictionnaire)
-
-                    # ajout de la jointure avec le fournisseur
-                    valeur_update_dictionnaire["id_telephone"] = mconn_bd.lastrowid
-                    str_sql_action_telephone = """
-                    INSERT INTO t_telephone_avoir_fournisseur (fk_telephone,fk_fournisseur) 
-                    VALUES (%(id_telephone)s,%(value_id_fournisseur)s)
-                    """
-                    with DBconnection() as mconn_bd:
-                        mconn_bd.execute(str_sql_action_telephone, valeur_update_dictionnaire)
-
-
-            # str_sql_update_telephone = """
-            # UPDATE t_telephone AS tel
-            # JOIN t_telephone_avoir_fournisseur AS t ON t.fk_telephone = tel.id_telephone
-            # JOIN t_fournisseur AS f ON t.fk_fournisseur = f.id_fournisseur
-            # SET tel.num_telephone = %(telephone_fournisseur)s
-            # WHERE f.id_fournisseur = %(value_id_fournisseur)s
-            # AND NOT EXISTS (
-            #     SELECT * FROM t_telephone_avoir_fournisseur AS t2
-            #     WHERE t2.fk_telephone = tel.id_telephone
-            #     AND t2.fk_fournisseur != %(value_id_fournisseur)s
-            # )
-            # """
-
+            # Instructions pour rechercher si l'email est utilisé uniquement par le fournisseur
+            # Si oui, modifier directement dans t_mail
+            # Sinon, créer un nouvel email dans t_mail
+            # Supprimer la liaison dans t_mail_avoir_fournisseur
+            # Créer la nouvelle liaison dans t_mail_avoir_fournisseur
             str_sql_update_email = """
-            UPDATE t_mail AS mail
-            JOIN t_mail_avoir_fournisseur AS m ON m.fk_mail = mail.id_mail
-            JOIN t_fournisseur AS f ON m.fk_fournisseur = f.id_fournisseur
-            JOIN t_adresse_etre_fournisseur AS af ON af.fk_fournisseur = f.id_fournisseur
-            JOIN t_adresse AS a ON af.fk_adresse = a.id_adresse
-            SET mail.nom_mail = %(email_fournisseur)s,
-                a.nom_rue_adresse = %(nom_rue_adresse)s,
-                a.ville_adresse = %(ville_fournisseur)s,
-                a.npa_adresse = %(code_postal_fournisseur)s
-            WHERE f.id_fournisseur = %(value_id_fournisseur)s
+UPDATE t_mail AS mail
+JOIN t_mail_avoir_fournisseur AS m ON m.fk_mail = mail.id_mail
+JOIN t_fournisseur AS f ON m.fk_fournisseur = f.id_fournisseur
+JOIN t_adresse_etre_fournisseur AS af ON af.fk_fournisseur = f.id_fournisseur
+JOIN t_adresse AS a ON af.fk_adresse = a.id_adresse
+SET a.nom_rue_adresse = %(nom_rue_adresse)s, a.ville_adresse = %(ville_fournisseur)s, a.npa_adresse = %(code_postal_fournisseur)s
+WHERE f.id_fournisseur = %(value_id_fournisseur)s
+
             """
 
-            # Exécution des requêtes SQL
+            str_sql_update_adresse = """
+                UPDATE t_adresse AS a
+                JOIN t_adresse_etre_fournisseur AS af ON af.fk_adresse = a.id_adresse
+                JOIN t_fournisseur AS f ON af.fk_fournisseur = f.id_fournisseur
+                SET a.ville_adresse = %(ville_fournisseur)s, a.npa_adresse = %(code_postal_fournisseur)s
+                WHERE f.id_fournisseur = %(value_id_fournisseur)s
+            """
+
             with DBconnection() as mconn_bd:
-               # mconn_bd.execute(str_sql_update_telephone, valeur_update_dictionnaire)
+                mconn_bd.execute(str_sql_update_telephone, valeur_update_dictionnaire)
                 mconn_bd.execute(str_sql_update_email, valeur_update_dictionnaire)
+                mconn_bd.execute(str_sql_update_adresse, valeur_update_dictionnaire)
 
-            flash(f"Donnée mise à jour !!", "success")
+            flash(f"Données mises à jour !!", "success")
 
-            # Redirection vers la page d'affichage des fournisseurs
+            # Rediriger vers la page d'affichage avec l'ID du fournisseur mis à jour
             return redirect(url_for('fournisseur_afficher', order_by="ASC", id_fournisseur_sel=id_fournisseur_update))
-
         elif request.method == "GET":
-            # Opération sur la BD pour récupérer les informations du fournisseur à mettre à jour
+            # Récupérer les données du fournisseur depuis la base de données pour afficher dans le formulaire
             str_sql_id_fournisseur = """
-                             SELECT f.nom_fournisseur, mail.nom_mail, tel.num_telephone, a.nom_rue_adresse, a.ville_adresse, a.npa_adresse
-                             FROM t_fournisseur AS f
-                             JOIN t_mail_avoir_fournisseur AS m ON m.fk_fournisseur = f.id_fournisseur
-                             JOIN t_mail AS mail ON m.fk_mail = mail.id_mail
-                             JOIN t_telephone_avoir_fournisseur AS t ON t.fk_fournisseur = f.id_fournisseur
-                             JOIN t_telephone AS tel ON t.fk_telephone = tel.id_telephone
-                             JOIN t_adresse_etre_fournisseur AS af ON af.fk_fournisseur = f.id_fournisseur
-                             JOIN t_adresse AS a ON af.fk_adresse = a.id_adresse
-                             WHERE f.id_fournisseur = %(value_id_fournisseur)s
-                             """
-
-            str_sql_id_fournisseur = """
-                            SELECT f.nom_fournisseur
-                            FROM t_fournisseur AS f
-                            WHERE f.id_fournisseur = %(value_id_fournisseur)s
-                            """
-            str_sql_id_fournisseur_mail = """
-                                        SELECT mail.nom_mail
-                                        FROM t_mail_avoir_fournisseur AS m
-                                        JOIN t_mail AS mail ON m.fk_mail = mail.id_mail
-                                        WHERE m.fk_fournisseur = %(value_id_fournisseur)s
-                                        """
-            str_sql_id_fournisseur_adresse = """
-                            SELECT a.nom_rue_adresse, a.ville_adresse, a.npa_adresse
-                            FROM t_adresse_etre_fournisseur AS af
-                            JOIN t_adresse AS a ON af.fk_adresse = a.id_adresse
-                            WHERE af.fk_fournisseur = %(value_id_fournisseur)s
-                            """
-            str_sql_id_fournisseur_telephone = """
-                            SELECT tel.id_telephone, tel.num_telephone
-                            FROM t_telephone_avoir_fournisseur AS t
-                            JOIN t_telephone AS tel ON t.fk_telephone = tel.id_telephone
-                            WHERE t.fk_fournisseur = %(value_id_fournisseur)s
-                            """
-
-
+                -- Votre requête SQL pour récupérer les données du fournisseur
+            """
             valeur_select_dictionnaire = {"value_id_fournisseur": id_fournisseur_update}
-
             with DBconnection() as mybd_conn:
                 mybd_conn.execute(str_sql_id_fournisseur, valeur_select_dictionnaire)
-                data_fournisseur = mybd_conn.fetchone()
-            with DBconnection() as mybd_conn:
-                mybd_conn.execute(str_sql_id_fournisseur_mail, valeur_select_dictionnaire)
-                data_fournisseur_mail = mybd_conn.fetchall()
-            with DBconnection() as mybd_conn:
-                mybd_conn.execute(str_sql_id_fournisseur_adresse, valeur_select_dictionnaire)
-                data_fournisseur_addresse = mybd_conn.fetchall()
-            with DBconnection() as mybd_conn:
-                mybd_conn.execute(str_sql_id_fournisseur_telephone, valeur_select_dictionnaire)
-                data_fournisseur_tel = mybd_conn.fetchall()
+            data_fournisseur = mybd_conn.fetchone()
 
-            if data_fournisseur :
-                form_update.nom_fournisseur_update_wtf.data = data_fournisseur["nom_fournisseur"]
-                form_update.email_fournisseur_wtf_essai.data = data_fournisseur_mail
-                form_update.telephone_fournisseur_wtf_essai.data = data_fournisseur_tel
-                form_update.adresse.data = data_fournisseur_addresse
-
-                # Gestion du sous-formulaire de téléphone
-                telephones = []
-                for tel in data_fournisseur_tel:
-                    tel_form = FormWTFTelephone()
-                    tel_form.telephone.id = tel["id_telephone"]
-                    tel_form.telephone.name = "telephone"+str(tel["id_telephone"])
-                    tel_form.telephone.data = tel["num_telephone"]
-                    telephones.append(tel_form)
-                form_update.telephones = telephones
-
-                form_update.nom_rue_adresse.data = "" #data_fournisseur["nom_rue_adresse"]
-                form_update.ville_fournisseur.data = "" #data_fournisseur["ville_adresse"]
-                form_update.code_postal_fournisseur.data = "" # data_fournisseur["npa_adresse"]
-            else:
-                flash("Fournisseur introuvable.", "error")
-                # return redirect(url_for('fournisseur_afficher', order_by="ASC", id_fournisseur_sel=id_fournisseur_update))
+            # Afficher les données récupérées dans les champs du formulaire
+            form_update.nom_fournisseur_update_wtf.data = data_fournisseur["nom_fournisseur"]
+            form_update.email_fournisseur_wtf_essai.data = data_fournisseur["email_fournisseur"]
+            form_update.telephone_fournisseur_wtf_essai.data = data_fournisseur["telephone_fournisseur"]
+            form_update.nom_rue_adresse_wtf.data = data_fournisseur["nom_rue_adresse"]
+            form_update.ville_fournisseur.data = data_fournisseur["ville_adresse"]
+            form_update.code_postal_fournisseur.data = data_fournisseur["npa_adresse"]
 
     except Exception as Exception_fournisseur_update_wtf:
         raise ExceptionFournisseurUpdateWtf(
             f"fichier : {Path(__file__).name}  ;  "
             f"{fournisseur_update_wtf.__name__} ; "
             f"{Exception_fournisseur_update_wtf}")
-
     return render_template("Fournisseur/fournisseur_update_wtf.html", form_update=form_update)
 
 

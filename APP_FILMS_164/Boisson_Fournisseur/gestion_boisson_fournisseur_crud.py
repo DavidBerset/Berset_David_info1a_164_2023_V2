@@ -32,23 +32,28 @@ def boisson_fournisseur_afficher(id_boisson_sel):
     if request.method == "GET":
         try:
             with DBconnection() as mc_afficher:
-                # sous requete par de t_boisson et compte la quatité stocké depuis cette requet on vas rechercher la liste des fournisseur par boisson
-                strsql_fournisseur_boisson_afficher_data = """SELECT id_boisson, nom_boisson, type_boisson, prix_vente_boisson, cover_link_boisson, code_barre_boisson,
-                                                            GROUP_CONCAT(nom_fournisseur) as BoissonFournisseur, Stock FROM (
-                                                            SELECT id_boisson, nom_boisson, type_boisson, prix_vente_boisson, cover_link_boisson, code_barre_boisson, SUM(t_boisson_stocker_contenance.nombre_quantite) AS Stock FROM t_boisson 
-                                                            LEFT JOIN t_boisson_stocker_contenance ON t_boisson.id_boisson  = t_boisson_stocker_contenance.fk_boisson
-                                                            GROUP BY id_boisson) AS t_boisson
-                                                            LEFT JOIN t_boisson_acheter_fournisseur ON id_boisson = t_boisson_acheter_fournisseur.fk_boisson
-                                                            LEFT JOIN t_fournisseur ON t_fournisseur.id_fournisseur = t_boisson_acheter_fournisseur.fk_fournisseur
-                                                            GROUP BY id_boisson"""
+                # sous requete par de t_boisson et compte la quantité stockée depuis cette requête on va rechercher la liste des fournisseurs par boisson
+                strsql_fournisseur_boisson_afficher_data = """
+                    SELECT 
+                        id_boisson, 
+                        nom_boisson, 
+                        type_boisson, 
+                        prix_vente_boisson, 
+                        cover_link_boisson, 
+                        code_barre_boisson, 
+                        stock_boisson AS Stock
+                    FROM t_boisson 
+                    LEFT JOIN t_boisson_acheter_fournisseur ON id_boisson = t_boisson_acheter_fournisseur.fk_boisson
+                    LEFT JOIN t_fournisseur ON t_fournisseur.id_fournisseur = t_boisson_acheter_fournisseur.fk_fournisseur
+                """
                 if id_boisson_sel == 0:
                     # le paramètre 0 permet d'afficher tous les Boissons
                     # Sinon le paramètre représente la valeur de l'id de la boisson
                     mc_afficher.execute(strsql_fournisseur_boisson_afficher_data)
                 else:
-                    # Constitution d'un dictionnaire pour associer l'id de la boisson sélectionné avec un nom de variable
+                    # Constitution d'un dictionnaire pour associer l'id de la boisson sélectionnée avec un nom de variable
                     valeur_id_boisson_selected_dictionnaire = {"value_id_boisson_selected": id_boisson_sel}
-                    # En MySql l'instruction HAVING fonctionne comme un WHERE... mais doit être associée à un GROUP BY
+                    # En MySql, l'instruction HAVING fonctionne comme un WHERE... mais doit être associée à un GROUP BY
                     # L'opérateur += permet de concaténer une nouvelle valeur à la valeur de gauche préalablement définie.
                     strsql_fournisseur_boisson_afficher_data += """ HAVING id_boisson= %(value_id_boisson_selected)s"""
 
@@ -62,10 +67,10 @@ def boisson_fournisseur_afficher(id_boisson_sel):
                 if not data_fournisseur_boisson_afficher and id_boisson_sel == 0:
                     flash("""La table "t_boisson" est vide. !""", "warning")
                 elif not data_fournisseur_boisson_afficher and id_boisson_sel > 0:
-                    # Si l'utilisateur change l'id_boisson dans l'URL et qu'il ne correspond à aucun film
-                    flash(f"Le film {id_boisson_sel} demandé n'existe pas !!", "warning")
+                    # Si l'utilisateur change l'id_boisson dans l'URL et qu'il ne correspond à aucune boisson
+                    flash(f"La boisson {id_boisson_sel} demandée n'existe pas !!", "warning")
                 else:
-                    flash(f"Données Boisson et Fournisseur affichés !!", "success")
+                    flash(f"Données Boisson et Fournisseur affichées !!", "success")
 
         except Exception as Exception_boisson_fournisseur_afficher:
             raise ExceptionBoissonFournisseurAfficher(f"fichier : {Path(__file__).name}  ;  {boisson_fournisseur_afficher.__name__} ;"

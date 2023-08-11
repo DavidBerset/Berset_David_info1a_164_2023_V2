@@ -16,7 +16,7 @@ class FormWTFAjouterCaisse(FlaskForm):
         Définition d'un "bouton" submit avec un libellé personnalisé.
     """
     # date_Caisse_regexp = "^([A-Z]|[a-zÀ-ÖØ-öø-ÿ])[A-Za-zÀ-ÖØ-öø-ÿ]*['\- ]?[A-Za-zÀ-ÖØ-öø-ÿ]+$"
-    date_Caisse_wtf = DateField("Insérer le fournisseur",
+    date_caisse_wtf = DateField("Insérer le fournisseur",
                                 format="%Y-%m-%d",
                                 validators=[],
                                 render_kw={"placeholder": "YYYY-MM-DD"})
@@ -29,17 +29,35 @@ class FormWTFUpdateCaisse(FlaskForm):
         Définition d'un "bouton" submit avec un libellé personnalisé.
         Accepte le trait d'union ou l'apostrophe, et l'espace entre deux mots, mais pas plus d'une occurence.
     """
-    # date_caisse_update_regexp = "^([A-Z]|[a-zÀ-ÖØ-öø-ÿ])[A-Za-zÀ-ÖØ-öø-ÿ]*['\- ]?[A-Za-zÀ-ÖØ-öø-ÿ]+$"
-    # date_caisse_update_wtf = StringField("Clavioter la date de la caisse ", validators=[Length(min=2, max=20, message="min 2 max 20"),
-    #                                                                       Regexp(date_caisse_update_regexp,
-    #                                                                              message="Pas de chiffres, de "
-    #                                                                                      "caractères "
-    #                                                                                      "spéciaux, "
-    #                                                                                      "d'espace à double, de double "
-    #                                                                                      "apostrophe, de double trait "
-    #                                                                                      "union")
-    #                                                                       ])
+    date_caisse_update_regexp = "^([A-Z]|[a-zÀ-ÖØ-öø-ÿ])[A-Za-zÀ-ÖØ-öø-ÿ]*['\- ]?[A-Za-zÀ-ÖØ-öø-ÿ]+$"
+    date_caisse_update_wtf = StringField("Clavioter la date de la caisse ", validators=[Length(min=2, max=20, message="min 2 max 20"),
+                                                                          Regexp(date_caisse_update_regexp,
+                                                                                 message="Pas de chiffres, de "
+                                                                                         "caractères "
+                                                                                         "spéciaux, "
+                                                                                         "d'espace à double, de double "
+                                                                                         "apostrophe, de double trait "
+                                                                                         "union")
+                                                                          ])
     caisse_avant_fete_wtf_essai = StringField("Clavioter le montant dans la caisse avant la fête ")#, validators=[Length(min=2, max=20, message="min 2 max 20"),
+                                                                          # Regexp(nom_fournisseur_update_regexp,
+                                                                          #        message="Pas de chiffres, de "
+                                                                          #                "caractères "
+                                                                          #                "spéciaux, "
+                                                                          #                "d'espace à double, de double "
+                                                                          #                "apostrophe, de double trait "
+                                                                          #                "union")
+                                                                          # ])
+    caisse_apres_fete_wtf_essai = StringField("Clavioter le montant dans la caisse avant la fête ")#, validators=[Length(min=2, max=20, message="min 2 max 20"),
+                                                                          # Regexp(nom_fournisseur_update_regexp,
+                                                                          #        message="Pas de chiffres, de "
+                                                                          #                "caractères "
+                                                                          #                "spéciaux, "
+                                                                          #                "d'espace à double, de double "
+                                                                          #                "apostrophe, de double trait "
+                                                                          #                "union")
+                                                                          # ])
+    difference_caisse_wtf_essai = StringField("Clavioter le montant dans la caisse avant la fête ")#, validators=[Length(min=2, max=20, message="min 2 max 20"),
                                                                           # Regexp(nom_fournisseur_update_regexp,
                                                                           #        message="Pas de chiffres, de "
                                                                           #                "caractères "

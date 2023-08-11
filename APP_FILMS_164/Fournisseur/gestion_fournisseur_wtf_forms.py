@@ -4,8 +4,11 @@
     Gestion des formulaires avec WTF
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField, FieldList, FormField, IntegerField, SubmitField
-from wtforms.validators import Length, InputRequired, DataRequired, Regexp
+from wtforms import StringField, DateField
+from wtforms import IntegerField
+from wtforms import SubmitField
+from wtforms.validators import Length, InputRequired, DataRequired
+from wtforms.validators import Regexp
 
 
 class FormWTFAjouterFournisseur(FlaskForm):
@@ -23,46 +26,6 @@ class FormWTFAjouterFournisseur(FlaskForm):
                                                                    ])
     submit = SubmitField("Enregistrer le fournisseur")
 
-
-class FormWTFAdresse(FlaskForm):
-    """
-        Dans le formulaire "fournisseur_ajouter_wtf.html" on impose que le champ soit rempli.
-        Définition d'un "bouton" submit avec un libellé personnalisé.
-    """
-    nom_rue_adresse = StringField("Nom de rue de l'adresse")  # Champ nom_rue_adresse ajouté
-    ville_fournisseur = StringField("Ville du fournisseur")  # Champ ville_fournisseur ajouté
-    code_postal_fournisseur = IntegerField("Code postal du fournisseur")  # Champ code_postal_fournisseur ajouté
-
-class FormWTFTelephone(FlaskForm):
-    """
-        Dans le formulaire "fournisseur_ajouter_wtf.html" on impose que le champ soit rempli.
-        Définition d'un "bouton" submit avec un libellé personnalisé.
-    """
-
-    telephone = StringField("Clavioter le numéro du fournisseur ")  # , validators=[Length(min=2, max=20, message="min 2 max 20"),
-                                                                                            # Regexp(nom_fournisseur_update_regexp,
-                                                                                            #        message="Pas de chiffres, de "
-                                                                                            #                "caractères "
-                                                                                            #                "spéciaux, "
-                                                                                            #                "d'espace à double, de double "
-                                                                                            #                "apostrophe, de double trait "
-                                                                                            #                "union")
-                                                                                            # ])
-
-class FormWTFMail(FlaskForm):
-    """
-        Dans le formulaire "fournisseur_ajouter_wtf.html" on impose que le champ soit rempli.
-        Définition d'un "bouton" submit avec un libellé personnalisé.
-    """
-    email_wtf = StringField("Clavioter l'email du fournisseur ")#, validators=[Length(min=2, max=200, message="min 2 max 200"),
-                                                                          # Regexp(nom_fournisseur_update_regexp,
-                                                                          #        message="Pas de chiffres, de "
-                                                                          #                "caractères "
-                                                                          #                "spéciaux, "
-                                                                          #                "d'espace à double, de double "
-                                                                          #                "apostrophe, de double trait "
-                                                                          #                "union")
-                                                                          # ])
 
 class FormWTFUpdateFournisseur(FlaskForm):
 
@@ -90,7 +53,6 @@ class FormWTFUpdateFournisseur(FlaskForm):
                                                                           #                "apostrophe, de double trait "
                                                                           #                "union")
                                                                           # ])
-
     telephone_fournisseur_wtf_essai = StringField("Clavioter le numéro du fournisseur ")  # , validators=[Length(min=2, max=20, message="min 2 max 20"),
                                                                                             # Regexp(nom_fournisseur_update_regexp,
                                                                                             #        message="Pas de chiffres, de "
@@ -100,21 +62,16 @@ class FormWTFUpdateFournisseur(FlaskForm):
                                                                                             #                "apostrophe, de double trait "
                                                                                             #                "union")
                                                                                             # ])
-    telephones = FieldList(FormField(FormWTFTelephone))
 
-    nom_rue_adresse = StringField("Nom de rue de l'adresse")  # Champ nom_rue_adresse ajouté
+    nom_rue_adresse_wtf = StringField("Nom de rue de l'adresse")  # Champ nom_rue_adresse ajouté
     ville_fournisseur = StringField("Ville du fournisseur")  # Champ ville_fournisseur ajouté
     code_postal_fournisseur = IntegerField("Code postal du fournisseur")  # Champ code_postal_fournisseur ajouté
-    adresse = StringField("Nom de rue de l'adresse")  # Champ nom_rue_adresse ajouté
-    ajoute_tel = SubmitField("Ajouter téléphone")
 
     submit = SubmitField("Update le fournisseur")
-
 
 class FormWTFDeleteFournisseur(FlaskForm):
     """
         Dans le formulaire "fournisseur_delete_wtf.html"
-
         nom_fournisseur_delete_wtf : Champ qui reçoit la valeur du genre, lecture seule. (readonly=true)
         submit_btn_del : Bouton d'effacement "DEFINITIF".
         submit_btn_conf_del : Bouton de confirmation pour effacer un "genre".
