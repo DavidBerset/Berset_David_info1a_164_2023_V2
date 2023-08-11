@@ -224,7 +224,13 @@ def boisson_delete_wtf():
             WHERE id_boisson = %(value_id_boisson)s
             """
 
+            str_sql_delete_pers_entrer_boisson = """
+            DELETE FROM t_pers_entrer_boisson
+            WHERE fk_boisson = %(value_id_boisson)s
+            """
+
             with DBconnection() as mconn_bd:
+                mconn_bd.execute(str_sql_delete_pers_entrer_boisson, valeur_delete_dictionnaire)
                 # Supprimer les enregistrements associés dans t_pers_sortie_boisson
                 mconn_bd.execute(str_sql_delete_pers_sortie_boisson, valeur_delete_dictionnaire)
                 # Supprimer les enregistrements associés dans t_boisson_stocker_contenance

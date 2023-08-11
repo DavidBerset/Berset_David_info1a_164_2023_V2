@@ -24,6 +24,30 @@ class FormWTFAjouterFournisseur(FlaskForm):
                                                                                   "d'espace à double, de double "
                                                                                   "apostrophe, de double trait union")
                                                                    ])
+    email_fournisseur_add_wtf_essai = StringField("Clavioter l'email du fournisseur")
+                                                                            #, validators=[Length(min=2, max=20, message="min 2 max 20"),
+                                                                          # Regexp(nom_fournisseur_update_regexp,
+                                                                          #        message="Pas de chiffres, de "
+                                                                          #                "caractères "
+                                                                          #                "spéciaux, "
+                                                                          #                "d'espace à double, de double "
+                                                                          #                "apostrophe, de double trait "
+                                                                          #                "union")
+                                                                          # ])
+    telephone_fournisseur_add_wtf_essai = StringField("Clavioter le numéro du fournisseur ")  # , validators=[Length(min=2, max=20, message="min 2 max 20"),
+                                                                                            # Regexp(nom_fournisseur_update_regexp,
+                                                                                            #        message="Pas de chiffres, de "
+                                                                                            #                "caractères "
+                                                                                            #                "spéciaux, "
+                                                                                            #                "d'espace à double, de double "
+                                                                                            #                "apostrophe, de double trait "
+                                                                                            #                "union")
+                                                                                            # ])
+
+    nom_rue_adresse_add_wtf = StringField("Nom de rue de l'adresse")  # Champ nom_rue_adresse ajouté
+    ville_fournisseur_add = StringField("Ville du fournisseur")  # Champ ville_fournisseur ajouté
+    code_postal_fournisseur_add = IntegerField("Code postal du fournisseur")  # Champ code_postal_fournisseur ajouté
+
     submit = SubmitField("Enregistrer le fournisseur")
 
 

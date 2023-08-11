@@ -21,7 +21,10 @@
 						Type
 					</th>
 					<th class="">
-						Description
+						Stock
+					</th>
+					<th class="">
+						Prix
 					</th>
 					<th class="">
 						Image
@@ -42,8 +45,11 @@
 						{{ row.type_boisson|default("", True) }}
 					</th>
 					<th class="align-middle">
-						{{ row.code_barre_boisson|default("", True) }}
+						{{ row.stock_boisson|default("", True) }}
 					</th>
+<!--					<th class="align-middle">-->
+<!--						{{ row.code_barre_boisson|default("", True) }}-->
+<!--					</th>-->
 					<th class="align-middle">
 						{{ row.prix_vente_boisson|default("", True) }}
 					</th>

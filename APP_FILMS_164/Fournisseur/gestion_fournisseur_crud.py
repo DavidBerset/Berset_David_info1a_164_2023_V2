@@ -131,23 +131,17 @@ def fournisseur_ajouter_wtf():
                 #name_fournisseur = name_fournisseur_wtf.lower()
                 valeurs_insertion_dictionnaire = {"value_intitule_fournisseur": name_fournisseur}
                 print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)
-
                 strsql_insert_fournisseur = """INSERT INTO t_fournisseur (id_fournisseur,nom_fournisseur) VALUES (NULL,%(value_intitule_fournisseur)s) """
-
                 with DBconnection() as mconn_bd:
                     mconn_bd.execute(strsql_insert_fournisseur, valeurs_insertion_dictionnaire)
-
                 flash(f"Données insérées !!", "success")
                 print(f"Données insérées !!")
-
                 # Pour afficher et constater l'insertion de la valeur, on affiche en ordre inverse. (DESC)
                 return redirect(url_for('fournisseur_afficher', order_by='DESC', id_fournisseur_sel=0))
-
         except Exception as Exception_fournisseur_ajouter_wtf:
             raise ExceptionFournisseurAjouterWtf(f"fichier : {Path(__file__).name}  ;  "
                                             f"{fournisseur_ajouter_wtf.__name__} ; "
                                             f"{Exception_fournisseur_ajouter_wtf}")
-
     return render_template("Fournisseur/fournisseur_ajouter_wtf.html", form=form)
 
 

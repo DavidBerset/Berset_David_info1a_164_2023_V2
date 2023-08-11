@@ -22,9 +22,9 @@
 						<th class="" >
 						  Prix
 						</th>
-						<th class="" >
-							Code barre
-						</th>
+<!--						<th class="" >-->
+<!--							Code barre-->
+<!--						</th>-->
 						<th class="" >
 							Image
 						</th>
@@ -55,9 +55,9 @@
 					  <td class="align-middle">
 						{{ row.prix_vente_boisson|default("", True) }}
 					  </td>
-					  <td class="align-middle">
-						{{ row.code_barre_boisson|default("", True) }}
-					  </td>
+<!--					  <td class="align-middle">-->
+<!--						{{ row.code_barre_boisson|default("", True) }}-->
+<!--					  </td>-->
 					  <td class="align-middle">
 						<img class="img" src={{ row.cover_link_boisson|default(None, True) }} style="border: 0;display:block; max-height:120px;"  alt = "{{ row.nom_boisson }}">
 					  </td>
